@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">NutriGo</string>
+    <string name="title_activity_main">NutriGo</string>
+    <string name="tab_text_1">Day</string>
+    <string name="tab_text_2">Food</string>
+    <string name="tab_text_3">Meal</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="swipe_left">edit</string>
+    <string name="swipe_right">delete</string>
+
+    <string name="fat">fat</string>
+    <string name="carbs">carbs</string>
+    <string name="sugar">sugar</string>
+    <string name="protein">protein</string>
+    <string name="name">Name</string>
+    <string name="kcal">kcal</string>
+    <string name="zero">0</string>
+    <string name="weight_unit">%1.0fg</string>
+    <string name="kcal_unit">%1.1f kcal</string>
+
+</resources>
