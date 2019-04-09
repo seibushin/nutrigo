@@ -1,8 +1,13 @@
 package de.seibushin.nutrigo.view.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,18 +36,14 @@ public class FragmentMeal extends Fragment {
     public FragmentMeal() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static FragmentMeal newInstance(int columnCount) {
-        FragmentMeal fragment = new FragmentMeal();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
         // Set the adapter
@@ -54,8 +55,7 @@ public class FragmentMeal extends Fragment {
             DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
             did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
-//            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-            recyclerView.setAdapter(new NutritionAdapter(Database.getAllMeals()));
+            recyclerView.setAdapter(new NutritionAdapter(Database.getInstance().getAllMeals()));
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
         }
@@ -79,6 +79,25 @@ public class FragmentMeal extends Fragment {
 //        super.onDetach();
 //        mListener = null;
 //    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_day).setVisible(false);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+//                startActivity(new Intent(getContext(), CreateMealActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this

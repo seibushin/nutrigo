@@ -16,8 +16,20 @@
     <string name="protein">protein</string>
     <string name="name">Name</string>
     <string name="kcal">kcal</string>
+    <string name="kcal_unit">%1.1f kcal</string>
+    <string name="kcal_long">Energy (kcal)</string>
     <string name="zero">0</string>
     <string name="weight_unit">%1.0fg</string>
-    <string name="kcal_unit">%1.1f kcal</string>
+    <string name="weight_long">Weight (g)</string>
+    <string name="portion_long">Portion (g)</string>
 
+    <string name="add_food">Add Food</string>
+    <string name="add_food_dialog">Add food?</string>
+    <string name="add_food_dialog_pos">yes</string>
+    <string name="add_food_dialog_neg">no</string>
+    <string name="add_food_insert">Food was added</string>
+    <string name="add_food_insert_error">Error occured while adding!</string>
+    <string name="action_add">Add</string>
+    <string name="action_search">Search</string>
+    <string name="weight_hint">All values should be based on the weight</string>
 </resources>

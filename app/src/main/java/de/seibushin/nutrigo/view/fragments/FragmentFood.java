@@ -1,8 +1,12 @@
 package de.seibushin.nutrigo.view.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.Database;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
 
@@ -31,18 +36,14 @@ public class FragmentFood extends Fragment {
     public FragmentFood() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static FragmentFood newInstance(int columnCount) {
-        FragmentFood fragment = new FragmentFood();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
         // Set the adapter
@@ -55,7 +56,7 @@ public class FragmentFood extends Fragment {
             did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
 //            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-            recyclerView.setAdapter(new NutritionAdapter(Database.getAllFoods()));
+            recyclerView.setAdapter(new NutritionAdapter(Database.getInstance().getAllFoods()));
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
         }
@@ -79,6 +80,25 @@ public class FragmentFood extends Fragment {
 //        super.onDetach();
 //        mListener = null;
 //    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_day).setVisible(false);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                startActivity(new Intent(getContext(), CreateFoodActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this

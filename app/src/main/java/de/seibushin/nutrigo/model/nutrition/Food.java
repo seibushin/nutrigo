@@ -2,7 +2,7 @@ package de.seibushin.nutrigo.model.nutrition;
 
 
 public class Food implements NutritionUnit {
-    private int id;
+    private int id = -1;
     private String name;
     private double kcal;
     private double fat;
@@ -13,13 +13,18 @@ public class Food implements NutritionUnit {
     private double portion;
 
     /**
-     * Constructor
+     * Constructor without id
      *
-     * @param id   id
-     * @param name name
+     * @param name    name
+     * @param kcal    kcal
+     * @param fat     fat
+     * @param carbs   carbs
+     * @param sugar   sugar
+     * @param protein protein
+     * @param weight  weight
+     * @param portion portion
      */
-    public Food(int id, String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion) {
-        this.id = id;
+    public Food(String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion) {
         this.name = name;
         this.kcal = kcal;
         this.fat = fat;
@@ -30,9 +35,24 @@ public class Food implements NutritionUnit {
         this.portion = portion;
     }
 
+    /**
+     * Constructor
+     *
+     * @param id   id
+     * @param name name
+     */
+    public Food(int id, String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion) {
+        this(name, kcal, fat, carbs, sugar, protein, weight, portion);
+        this.id = id;
+    }
+
     @Override
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

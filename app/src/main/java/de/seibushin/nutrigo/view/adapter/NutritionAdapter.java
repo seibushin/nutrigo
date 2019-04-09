@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +20,7 @@ import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
  * specified {@link FragmentDay.OnListFragmentInteractionListener}.
  */
 public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.ViewHolder> {
-    private final List<NutritionUnit> mValues;
+    private List<NutritionUnit> mValues;
 //    private final OnListFragmentInteractionListener mListener;
 
 //    public MyItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
@@ -27,8 +28,21 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
 //        mListener = listener;
 //    }
 
+    public NutritionAdapter() {
+        mValues = new ArrayList<>();
+    }
+
     public NutritionAdapter(List<NutritionUnit> items) {
         mValues = items;
+    }
+
+    /**
+     * Update the items list
+     *
+     * @param items
+     */
+    public void setItems(List<NutritionUnit> items) {
+        this.mValues = items;
     }
 
     @Override
@@ -107,7 +121,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             if (item.getType() == NutritionType.FOOD) {
                 portion.setText(portion.getContext().getString(R.string.weight_unit, item.getPortion()));
             } else {
-                portion.setText(String.format("%s",item.getPortion()));
+                portion.setText(String.format("%s", item.getPortion()));
             }
         }
     }
