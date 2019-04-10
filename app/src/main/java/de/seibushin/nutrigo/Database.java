@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import de.seibushin.nutrigo.model.Day;
 import de.seibushin.nutrigo.model.Profile;
@@ -15,6 +16,11 @@ import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
 public class Database {
+    private final List<FoodObserver> foodObservers = new ArrayList<>();
+    private final List<MealObserver> mealObservers = new ArrayList<>();
+    private final List<DayObserver> dayObservers = new ArrayList<>();
+    private final List<ProfileObserver> profileObservers = new ArrayList<>();
+
     private final Map<Integer, Food> allFoodsMap;
     private final List<NutritionUnit> allFoods;
     private final Map<Integer, Meal> allMealsMap;
@@ -31,6 +37,7 @@ public class Database {
      */
     public Database() {
         profile = new Profile();
+
         allFoodsMap = new HashMap<>();
         allFoods = new ArrayList<>();
         allMealsMap = new HashMap<>();
@@ -38,6 +45,10 @@ public class Database {
         allDays = new HashMap<>();
         selectedDay = new Day(today());
         allDays.put(selectedDay.getTime(), selectedDay);
+
+        // observe changes
+        profile.addChangeListener(this::changeProfile);
+        selectedDay.addChangeListener(this::changeDay);
 
         init();
     }
@@ -47,29 +58,39 @@ public class Database {
      */
     private void init() {
         addFood(new Food("Ananas", 59, 0.2, 12.2, 12.2, 0.5, 100, 800));
-        addFood(new Food("Apfel", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
-        addFood(new Food(2, "Apfelmus", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
-        addFood(new Food("Kiwi", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                Thread.sleep(3000);
+                addFood(new Food("Apfel", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
+                System.out.println("add Apple");
+                Thread.sleep(3000);
+                addFood(new Food(2, "Apfelmus", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
+                System.out.println("add Apfelmus");
+                Thread.sleep(3000);
+                addFood(new Food("Kiwi", 54, 0.1, 11.4, 10.3, 0.3, 100, 155));
 
-        addMeal(new Meal(1, "Test", new FoodPortion(allFoodsMap.get(0), 50), new FoodPortion(allFoodsMap.get(1), 200)));
-        addMeal(new Meal(2, "Tolles Meal", new FoodPortion(allFoodsMap.get(2), 66), new FoodPortion(allFoodsMap.get(3), 12.3)));
+                addMeal(new Meal(1, "Test", new FoodPortion(allFoodsMap.get(0), 50), new FoodPortion(allFoodsMap.get(1), 200)));
+                addMeal(new Meal(2, "Tolles Meal", new FoodPortion(allFoodsMap.get(2), 66), new FoodPortion(allFoodsMap.get(3), 12.3)));
 
-        // create a new calender of the current time
-        Calendar calendar = Calendar.getInstance();
-        // set the time to 00:00:00:000
-        toDay(calendar);
-        // get the date
-        Date date = calendar.getTime();
-        // try to get the day from the database
-        Day day = allDays.get(date.getTime());
-        // create new day if it does not exist
-        if (day == null) {
-            day = new Day(date);
-            allDays.put(day.getTime(), day);
-        }
+                // create a new calender of the current time
+                Calendar calendar = Calendar.getInstance();
+                // set the time to 00:00:00:000
+                toDay(calendar);
+                // get the date
+                Date date = calendar.getTime();
+                // try to get the day from the database
+                Day day = allDays.get(date.getTime());
+                // create new day if it does not exist
+                if (day == null) {
+                    day = new Day(date);
+                    allDays.put(day.getTime(), day);
+                }
 
-        day.addNutrition(allFoodsMap.get(2));
-        day.addNutrition(allMealsMap.get(1));
+                day.addNutrition(allFoodsMap.get(2), allMeals.get(1));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -108,6 +129,8 @@ public class Database {
         food.setId(id);
         allFoods.add(food);
         allFoodsMap.put(id, food);
+
+        changeFoods();
     }
 
     /**
@@ -161,6 +184,7 @@ public class Database {
         return profile;
     }
 
+
     /**
      * Get the current day at 0:00:00
      *
@@ -178,5 +202,71 @@ public class Database {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    // ===========================================
+    // =============== Listener ==================
+    // ===========================================
+
+    public void subscribeToDay(DayObserver dayObserver) {
+        dayObservers.add(dayObserver);
+    }
+
+    public void subscribeToProfile(ProfileObserver profileObserver) {
+        profileObservers.add(profileObserver);
+    }
+
+    public void subscribeToFoods(FoodObserver foodObserver) {
+        foodObservers.add(foodObserver);
+    }
+
+    public void subscribeToMeals(MealObserver mealObserver) {
+        mealObservers.add(mealObserver);
+    }
+
+    // do i need this?
+    private void changeFoods() {
+        for (FoodObserver foodObserver : foodObservers) {
+            foodObserver.changed(allFoods);
+        }
+    }
+
+    // do i need this?
+    private void changeMeals() {
+        for (MealObserver mealObserver : mealObservers) {
+            mealObserver.changed(allMeals);
+        }
+    }
+
+    private void changeDay() {
+        for (DayObserver dayObserver : dayObservers) {
+            dayObserver.changed(selectedDay);
+        }
+    }
+
+    private void changeProfile() {
+        for (ProfileObserver profileObserver : profileObservers) {
+            profileObserver.changed(profile);
+        }
+    }
+
+    // ===========================================
+    // ============== Interfaces =================
+    // ===========================================
+
+    public interface FoodObserver {
+        void changed(List<NutritionUnit> foods);
+    }
+
+    public interface MealObserver {
+        void changed(List<NutritionUnit> meals);
+    }
+
+    public interface DayObserver {
+        void changed(Day day);
+    }
+
+    public interface ProfileObserver {
+        void changed(Profile profile);
     }
 }

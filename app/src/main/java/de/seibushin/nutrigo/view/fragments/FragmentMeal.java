@@ -11,12 +11,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.Database;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
 
@@ -29,6 +32,7 @@ import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
 public class FragmentMeal extends Fragment {
 //    private OnListFragmentInteractionListener mListener;
 
+    private NutritionAdapter adapter;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -55,11 +59,29 @@ public class FragmentMeal extends Fragment {
             DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
             did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
-            recyclerView.setAdapter(new NutritionAdapter(Database.getInstance().getAllMeals()));
+            adapter = new NutritionAdapter();
+            recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
+
+            updateMeal(Database.getInstance().getAllMeals());
+
+            // subscribe to changes
+            Database.getInstance().subscribeToFoods(this::updateMeal);
         }
         return view;
+    }
+
+    /**
+     * Update meals
+     * @param meals
+     */
+    private void updateMeal(List<NutritionUnit> meals) {
+        System.out.println("UPDATE MEALS");
+        getActivity().runOnUiThread(() -> {
+            adapter.setItems(meals);
+            adapter.notifyDataSetChanged();
+        });
     }
 
 

@@ -20,7 +20,7 @@ import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
  * specified {@link FragmentDay.OnListFragmentInteractionListener}.
  */
 public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.ViewHolder> {
-    private List<NutritionUnit> mValues;
+    private final List<NutritionUnit> mValues;
 //    private final OnListFragmentInteractionListener mListener;
 
 //    public MyItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
@@ -41,8 +41,9 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
      *
      * @param items
      */
-    public void setItems(List<NutritionUnit> items) {
-        this.mValues = items;
+    public synchronized void setItems(List<NutritionUnit> items) {
+        this.mValues.clear();
+        this.mValues.addAll(items);
     }
 
     @Override

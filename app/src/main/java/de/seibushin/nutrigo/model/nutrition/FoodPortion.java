@@ -1,6 +1,13 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.seibushin.nutrigo.model.ChangeListener;
+
 public class FoodPortion implements NutritionUnit {
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
     private Food food;
     private double portion;
 
@@ -67,5 +74,23 @@ public class FoodPortion implements NutritionUnit {
      */
     private double portionize(double v) {
         return v * portion / food.getWeight();
+    }
+
+    /**
+     * Set the onChangeListener
+     *
+     * @param changeListener changeListener
+     */
+    public void addChangeListener(ChangeListener changeListener) {
+        changeListeners.add(changeListener);
+    }
+
+    /**
+     * notify the listener about the changes
+     */
+    private void changed() {
+        for (ChangeListener changeListener : changeListeners) {
+            changeListener.change();
+        }
     }
 }

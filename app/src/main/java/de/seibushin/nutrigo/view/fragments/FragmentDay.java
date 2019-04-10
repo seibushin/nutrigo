@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.Database;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.Day;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
@@ -77,10 +78,12 @@ public class FragmentDay extends Fragment {
         recyclerView.setLayoutManager(llm);
         recyclerView.addItemDecoration(did);
 
-        Database.getInstance().getProfile().setChange(this::updateProfile);
+        updateDay(Database.getInstance().getSelectedDay());
+        updateProfile(Database.getInstance().getProfile());
 
-        updateDay();
-        updateProfile();
+        // subscribe to changes
+        Database.getInstance().subscribeToProfile(this::updateProfile);
+        Database.getInstance().subscribeToDay(this::updateDay);
 
         return view;
     }
@@ -96,24 +99,30 @@ public class FragmentDay extends Fragment {
     /**
      * Update view by setting the max values for the progress
      */
-    private void updateProfile() {
-        pc_kcal.setMax(Database.getInstance().getProfile().getKcal());
-        pc_fat.setMax(Database.getInstance().getProfile().getFat());
-        pc_carbs.setMax(Database.getInstance().getProfile().getCarbs());
-        pc_protein.setMax(Database.getInstance().getProfile().getProtein());
+    private void updateProfile(Profile profile) {
+        getActivity().runOnUiThread(() -> {
+            pc_kcal.setMax(profile.getKcal());
+            pc_fat.setMax(profile.getFat());
+            pc_carbs.setMax(profile.getCarbs());
+            pc_protein.setMax(profile.getProtein());
+        });
     }
 
     /**
      * Update the day by displaying the correct nutrition items and updating the progress
      */
-    private void updateDay() {
-        adapter.setItems(Database.getInstance().getSelectedDay().getNutrition());
+    private void updateDay(Day day) {
+        System.out.println("UPDATE DAY");
+        getActivity().runOnUiThread(() -> {
+            adapter.setItems(day.getNutrition());
+            adapter.notifyDataSetChanged();
 
-        // update progress
-        pc_kcal.setProgress((int) Database.getInstance().getSelectedDay().getKcal());
-        pc_fat.setProgress((int) Database.getInstance().getSelectedDay().getFat());
-        pc_carbs.setProgress((int) Database.getInstance().getSelectedDay().getCarbs());
-        pc_protein.setProgress((int) Database.getInstance().getSelectedDay().getProtein());
+            // update progress
+            pc_kcal.setProgress((int) day.getKcal());
+            pc_fat.setProgress((int) day.getFat());
+            pc_carbs.setProgress((int) day.getCarbs());
+            pc_protein.setProgress((int) day.getProtein());
+        });
     }
 
 //    @Override

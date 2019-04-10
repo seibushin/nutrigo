@@ -1,7 +1,14 @@
 package de.seibushin.nutrigo.model.nutrition;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.seibushin.nutrigo.model.ChangeListener;
+
 public class Food implements NutritionUnit {
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
     private int id = -1;
     private String name;
     private double kcal;
@@ -98,5 +105,23 @@ public class Food implements NutritionUnit {
     @Override
     public double getPortion() {
         return portion;
+    }
+
+    /**
+     * Set the onChangeListener
+     *
+     * @param changeListener changeListener
+     */
+    public void addChangeListener(ChangeListener changeListener) {
+        changeListeners.add(changeListener);
+    }
+
+    /**
+     * notify the listener about the changes
+     */
+    private void changed() {
+        for (ChangeListener changeListener : changeListeners) {
+            changeListener.change();
+        }
     }
 }

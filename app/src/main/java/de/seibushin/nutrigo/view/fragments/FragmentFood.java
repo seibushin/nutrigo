@@ -10,12 +10,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.Database;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
@@ -28,6 +31,8 @@ import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
  */
 public class FragmentFood extends Fragment {
 //    private OnListFragmentInteractionListener mListener;
+
+    private NutritionAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -55,14 +60,30 @@ public class FragmentFood extends Fragment {
             DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
             did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
-//            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-            recyclerView.setAdapter(new NutritionAdapter(Database.getInstance().getAllFoods()));
+            adapter = new NutritionAdapter();
+            recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
+
+            updateFood(Database.getInstance().getAllFoods());
+
+            // subscribe to changes
+            Database.getInstance().subscribeToFoods(this::updateFood);
         }
         return view;
     }
 
+    /**
+     * Update foods
+     * @param foods
+     */
+    private void updateFood(List<NutritionUnit> foods) {
+        System.out.println("UPDATE FOOD");
+        getActivity().runOnUiThread(() -> {
+            adapter.setItems(foods);
+            adapter.notifyDataSetChanged();
+        });
+    }
 
 //    @Override
 //    public void onAttach(Context context) {

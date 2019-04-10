@@ -1,13 +1,16 @@
 package de.seibushin.nutrigo.model.nutrition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Meal implements NutritionUnit {
+import de.seibushin.nutrigo.model.ChangeListener;
+
+public class Meal implements NutritionUnit, ChangeListener {
+    private final List<ChangeListener> changeListeners = new ArrayList<>();
+
     private int id;
     private String name;
-    private List<FoodPortion> foods;
+    private final List<FoodPortion> foods = new ArrayList<>();
 
     /**
      * Constructor
@@ -18,7 +21,22 @@ public class Meal implements NutritionUnit {
     public Meal(int id, String name, FoodPortion... foods) {
         this.id = id;
         this.name = name;
-        this.foods = new ArrayList<>(Arrays.asList(foods));
+        for (FoodPortion food : foods) {
+            // observe food
+            food.addChangeListener(this);
+            this.foods.add(food);
+        }
+    }
+
+    /**
+     * Add food to the meal
+     *
+     * @param food food
+     */
+    public void addFood(FoodPortion food) {
+        food.addChangeListener(this);
+        this.foods.add(food);
+        change();
     }
 
     @Override
@@ -74,5 +92,21 @@ public class Meal implements NutritionUnit {
     @Override
     public double getPortion() {
         return 1;
+    }
+
+    /**
+     * Set the onChangeListener
+     *
+     * @param changeListener changeListener
+     */
+    public void addChangeListener(ChangeListener changeListener) {
+        changeListeners.add(changeListener);
+    }
+
+    @Override
+    public void change() {
+        for (ChangeListener changeListener : changeListeners) {
+            changeListener.change();
+        }
     }
 }

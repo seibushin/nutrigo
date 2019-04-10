@@ -1,5 +1,7 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import de.seibushin.nutrigo.model.ChangeListener;
+
 public interface NutritionUnit {
     /**
      * Nutrition unit id / database reference
@@ -70,4 +72,11 @@ public interface NutritionUnit {
      * @return portion
      */
     double getPortion();
+
+    /**
+     * Set the onChangeListener
+     *
+     * @param changeListener changeListener
+     */
+    void addChangeListener(ChangeListener changeListener);
 }
