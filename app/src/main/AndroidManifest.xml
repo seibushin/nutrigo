@@ -25,7 +25,12 @@
             android:parentActivityName=".view.MainActivity" />
         <activity
             android:name=".view.activity.CreateMealActivity"
-            android:label="@string/add_food"
+            android:label="@string/add_meal"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".view.MainActivity" />
+        <activity
+            android:name=".view.activity.CalendarActivity"
+            android:label="@string/select_day"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".view.MainActivity" />
     </application>

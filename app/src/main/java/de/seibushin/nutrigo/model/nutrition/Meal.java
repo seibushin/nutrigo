@@ -1,16 +1,24 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import de.seibushin.nutrigo.model.ChangeListener;
-
-public class Meal implements NutritionUnit, ChangeListener {
-    private final List<ChangeListener> changeListeners = new ArrayList<>();
-
+@Entity
+public class Meal implements NutritionUnit {
+    @PrimaryKey(autoGenerate = true)
+    @NonNull
     private int id;
     private String name;
     private final List<FoodPortion> foods = new ArrayList<>();
+
+    public Meal() {
+
+    }
 
     /**
      * Constructor
@@ -18,12 +26,11 @@ public class Meal implements NutritionUnit, ChangeListener {
      * @param id   id
      * @param name name
      */
+    @Ignore
     public Meal(int id, String name, FoodPortion... foods) {
         this.id = id;
         this.name = name;
         for (FoodPortion food : foods) {
-            // observe food
-            food.addChangeListener(this);
             this.foods.add(food);
         }
     }
@@ -34,9 +41,7 @@ public class Meal implements NutritionUnit, ChangeListener {
      * @param food food
      */
     public void addFood(FoodPortion food) {
-        food.addChangeListener(this);
         this.foods.add(food);
-        change();
     }
 
     @Override
@@ -60,7 +65,6 @@ public class Meal implements NutritionUnit, ChangeListener {
 
     @Override
     public double getKcal() {
-        System.out.println();
         return foods.stream().mapToDouble(FoodPortion::getKcal).sum();
     }
 
@@ -92,21 +96,5 @@ public class Meal implements NutritionUnit, ChangeListener {
     @Override
     public double getPortion() {
         return 1;
-    }
-
-    /**
-     * Set the onChangeListener
-     *
-     * @param changeListener changeListener
-     */
-    public void addChangeListener(ChangeListener changeListener) {
-        changeListeners.add(changeListener);
-    }
-
-    @Override
-    public void change() {
-        for (ChangeListener changeListener : changeListeners) {
-            changeListener.change();
-        }
     }
 }

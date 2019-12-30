@@ -3,37 +3,58 @@ package de.seibushin.nutrigo.view.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
+import androidx.recyclerview.widget.SortedListAdapterCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.recyclerview.widget.RecyclerView;
-import de.seibushin.nutrigo.model.nutrition.NutritionType;
-import de.seibushin.nutrigo.view.fragments.FragmentDay;
 import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
+import de.seibushin.nutrigo.model.nutrition.MealPortion;
+import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link NutritionUnit} and makes a call to the
- * specified {@link FragmentDay.OnListFragmentInteractionListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link NutritionUnit}
  */
-public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.ViewHolder> {
-    private final List<NutritionUnit> mValues;
+public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.ViewHolder> implements Filterable {
+    private NutritionFilter filter = new NutritionFilter();
+
+    private final List<NutritionUnit> data = new ArrayList<>();
+
+    private SortedList<NutritionUnit> dataFiltered = new SortedList(NutritionUnit.class, new SortedListAdapterCallback(this) {
+        @Override
+        public int compare(Object o1, Object o2) {
+            return (((NutritionUnit) o1).getName().toLowerCase()).compareTo(((NutritionUnit) o2).getName().toLowerCase());
+        }
+
+        @Override
+        public boolean areContentsTheSame(Object o1, Object o2) {
+            return false;
+        }
+
+        @Override
+        public boolean areItemsTheSame(Object o1, Object o2) {
+            return false;
+        }
+    });
+
 //    private final OnListFragmentInteractionListener mListener;
 
 //    public MyItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-//        mValues = items;
+//        data = items;
 //        mListener = listener;
 //    }
 
     public NutritionAdapter() {
-        mValues = new ArrayList<>();
-    }
-
-    public NutritionAdapter(List<NutritionUnit> items) {
-        mValues = items;
     }
 
     /**
@@ -42,20 +63,20 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
      * @param items
      */
     public synchronized void setItems(List<NutritionUnit> items) {
-        this.mValues.clear();
-        this.mValues.addAll(items);
+        this.data.clear();
+        this.data.addAll(items);
+        this.dataFiltered.replaceAll(items);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.nutrition_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.nutrition_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.setNutri(mValues.get(position));
+        holder.setNutri(dataFiltered.get(position));
 
 //        holder.mView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -71,7 +92,35 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return dataFiltered.size();
+    }
+
+    public void clear() {
+        data.clear();
+        dataFiltered.clear();
+    }
+
+    public List<NutritionUnit> getData() {
+        return data;
+    }
+
+    public NutritionUnit getItem(int index) {
+        return dataFiltered.get(index);
+    }
+
+    public void add(NutritionUnit food) {
+        data.add(food);
+        dataFiltered.add(food);
+    }
+
+    public void remove(NutritionUnit food) {
+        data.remove(food);
+        dataFiltered.remove(food);
+    }
+
+    @Override
+    public NutritionFilter getFilter() {
+        return filter;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,6 +135,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         private final TextView protein;
         private final TextView weight;
         private final TextView portion;
+        private final ImageView ic_nutri;
 
         /**
          * Constructor
@@ -103,6 +153,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             protein = view.findViewById(R.id.tv_protein);
             weight = view.findViewById(R.id.tv_weight);
             portion = view.findViewById(R.id.tv_portion);
+            ic_nutri = view.findViewById(R.id.ic_nutri);
         }
 
         /**
@@ -118,12 +169,63 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             carbs.setText(Helper.formatDecimal(item.getCarbs()));
             sugar.setText(Helper.formatDecimal(item.getSugar()));
             protein.setText(Helper.formatDecimal(item.getProtein()));
-            weight.setText(weight.getContext().getString(R.string.weight_unit, item.getWeight()));
+
+            // only add the calculation weight (100g) for not portionized nutrition
+            if (item.getClass().equals(FoodPortion.class) || item.getClass().equals(MealPortion.class)) {
+                weight.setText("");
+            } else {
+                weight.setText(weight.getContext().getString(R.string.weight_unit, item.getWeight()));
+            }
+
             if (item.getType() == NutritionType.FOOD) {
+                ic_nutri.setImageResource(R.drawable.ic_food);
+                // a meal portion has no metric
                 portion.setText(portion.getContext().getString(R.string.weight_unit, item.getPortion()));
             } else {
+                ic_nutri.setImageResource(R.drawable.ic_meal);
                 portion.setText(String.format("%s", item.getPortion()));
             }
+        }
+    }
+
+    public class NutritionFilter extends Filter {
+        private CharSequence query;
+
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            String charString = charSequence.toString();
+
+            List<NutritionUnit> filtered = new ArrayList<>();
+
+            if (charString.isEmpty()) {
+                filtered.addAll(data);
+            } else {
+                for (NutritionUnit f : data) {
+                    if (f.getName().toLowerCase().contains(charString.toLowerCase())) {
+                        filtered.add(f);
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = filtered;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults filterResults) {
+            dataFiltered.replaceAll((List<NutritionUnit>) filterResults.values);
+            notifyDataSetChanged();
+        }
+
+        public void setFilter(CharSequence constraint) {
+            super.filter(constraint);
+
+            query = constraint;
+        }
+
+        public CharSequence getQuery() {
+            return query;
         }
     }
 }

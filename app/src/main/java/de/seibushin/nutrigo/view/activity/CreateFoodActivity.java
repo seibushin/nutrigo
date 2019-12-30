@@ -8,17 +8,19 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import de.seibushin.nutrigo.Database;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 
 /**
  * Created by Uni on 15.08.2018.
@@ -36,6 +38,8 @@ public class CreateFoodActivity extends AppCompatActivity {
     private EditText sugar;
     private EditText protein;
 
+    private FoodViewModel foodViewModel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +52,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         name = findViewById(R.id.ti_name);
-        weight = findViewById(R.id.ti_tag);
+        weight = findViewById(R.id.ti_weight);
         portion = findViewById(R.id.ti_portion);
         kcal = findViewById(R.id.ti_kcal);
         fat = findViewById(R.id.ti_fat);
@@ -67,6 +71,8 @@ public class CreateFoodActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
     }
 
     /**
@@ -83,8 +89,8 @@ public class CreateFoodActivity extends AppCompatActivity {
             double _carbs = Double.valueOf(carbs.getText().toString());
             double _sugar = Double.valueOf(sugar.getText().toString());
 
-            Food food = new Food(_name, _weight, _portion, _kcal, _protein, _fat, _carbs, _sugar);
-            Database.getInstance().addFood(food);
+            Food food = new Food(_name, _kcal, _fat, _carbs, _sugar, _protein, _weight, _portion);
+            foodViewModel.insert(food);
 
             Snackbar.make(outerWrapper, R.string.add_food_insert, Snackbar.LENGTH_LONG).show();
             resetFood();

@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -77,6 +78,17 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
+        <ImageView
+            android:id="@+id/ic_nutri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_food" />
+
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
@@ -86,7 +98,7 @@
             android:text="@string/name"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ic_nutri"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -96,8 +108,8 @@
             android:layout_marginStart="8dp"
             android:text="@string/zero"
             android:textSize="12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_name"
-            app:layout_constraintStart_toEndOf="@+id/tv_name" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_portion"
+            app:layout_constraintStart_toEndOf="@+id/tv_portion" />
 
         <TextView
             android:id="@+id/tv_portion"
@@ -106,8 +118,8 @@
             android:layout_marginStart="8dp"
             android:text="@string/zero"
             android:textSize="12sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_weight"
-            app:layout_constraintStart_toEndOf="@+id/tv_weight" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_name"
+            app:layout_constraintStart_toEndOf="@+id/tv_name" />
 
         <TextView
             android:id="@+id/tv_kcal"
@@ -169,6 +181,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

@@ -6,8 +6,7 @@ import java.util.List;
 
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
-public class Day implements ChangeListener {
-    private final List<ChangeListener> changeListeners = new ArrayList<>();
+public class Day {
 
     private List<NutritionUnit> nutrition;
     private Date date;
@@ -25,10 +24,8 @@ public class Day implements ChangeListener {
     public void addNutrition(NutritionUnit... nus) {
         // observe nu
         for (NutritionUnit nu : nus) {
-            nu.addChangeListener(this);
             nutrition.add(nu);
         }
-        change();
     }
 
     /**
@@ -67,21 +64,5 @@ public class Day implements ChangeListener {
 
     public double getProtein() {
         return nutrition.stream().mapToDouble(NutritionUnit::getProtein).sum();
-    }
-
-    /**
-     * Set the onChangeListener
-     *
-     * @param changeListener changeListener
-     */
-    public void addChangeListener(ChangeListener changeListener) {
-        changeListeners.add(changeListener);
-    }
-
-    @Override
-    public void change() {
-        for (ChangeListener changeListener : changeListeners) {
-            changeListener.change();
-        }
     }
 }

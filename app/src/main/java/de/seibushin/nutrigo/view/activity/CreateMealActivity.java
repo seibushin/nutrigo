@@ -10,13 +10,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,19 +18,18 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
-import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
-
-
-/**
- * Created by Uni on 15.08.2018.
- */
+import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 
 public class CreateMealActivity extends AppCompatActivity {
     private CoordinatorLayout outerWrapper;
@@ -92,7 +84,7 @@ public class CreateMealActivity extends AppCompatActivity {
                 } else {
                     if (s.toString().length() > 0) {
                         rv_search.setVisibility(View.VISIBLE);
-                        search_adapter.search(s.toString());
+                        search_adapter.getFilter().filter(s);
                     } else {
                         rv_search.setVisibility(View.INVISIBLE);
                     }
@@ -133,20 +125,22 @@ public class CreateMealActivity extends AppCompatActivity {
 
         rv_search = findViewById(R.id.rv_search);
         search_adapter = new NutritionAdapter();
+//        search_adapter.setItems(Database.getInstance().getAllFoods());
         rv_search.setAdapter(search_adapter);
         rv_search.setLayoutManager(llm2);
         rv_search.addItemDecoration(did2);
         rv_search.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_search, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
                 Food food = (Food) search_adapter.getItem(position);
 
                 // add searched food to actual meal food
                 food_adapter.add(new FoodPortion(food, food.getPortion()));
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
             }
         }));
     }
@@ -161,9 +155,10 @@ public class CreateMealActivity extends AppCompatActivity {
         try {
             String _name = name.getText().toString().trim();
             String _tag = tag.getText().toString().trim();
-            Meal meal = new Meal(_name);
+            Meal meal = new Meal(0, _name);
             // add all selected food portions
-            food_adapter.getData().forEach(meal::addFood);
+            food_adapter.getData().forEach(food -> meal.addFood((FoodPortion) food));
+//            Database.getInstance().addMeal(meal);
             Snackbar.make(outerWrapper, R.string.add_meal_insert, Snackbar.LENGTH_LONG).show();
             resetMeal();
         } catch (NumberFormatException e) {

@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import de.seibushin.nutrigo.Database;
+
+import com.google.android.material.textfield.TextInputEditText;
+
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.Profile;
 
 public class ProfileDialog extends DialogFragment {
     private static final String TAG = "TargetFragment";
@@ -59,24 +58,24 @@ public class ProfileDialog extends DialogFragment {
      * Update the profile with the new values
      */
     private void updateProfile() {
-        Profile profile = Database.getInstance().getProfile();
-        profile.setKcal(Integer.parseInt(kcal.getText().toString()));
-        profile.setFat(Integer.parseInt(fat.getText().toString()));
-        profile.setCarbs(Integer.parseInt(carbs.getText().toString()));
-        profile.setSugar(Integer.parseInt(sugar.getText().toString()));
-        profile.setProtein(Integer.parseInt(protein.getText().toString()));
+//        Profile profile = Database.getInstance().getProfile();
+//        profile.setKcal(Integer.parseInt(kcal.getText().toString()));
+//        profile.setFat(Integer.parseInt(fat.getText().toString()));
+//        profile.setCarbs(Integer.parseInt(carbs.getText().toString()));
+//        profile.setSugar(Integer.parseInt(sugar.getText().toString()));
+//        profile.setProtein(Integer.parseInt(protein.getText().toString()));
     }
 
     /**
      * Update the ui showing the current values for the profile
      */
     private void updateUI() {
-        Profile profile = Database.getInstance().getProfile();
-        kcal.setText("" + profile.getKcal());
-        fat.setText("" + profile.getFat());
-        carbs.setText("" + profile.getCarbs());
-        sugar.setText("" + profile.getSugar());
-        protein.setText("" + profile.getProtein());
+//        Profile profile = Database.getInstance().getProfile();
+//        kcal.setText("" + profile.getKcal());
+//        fat.setText("" + profile.getFat());
+//        carbs.setText("" + profile.getCarbs());
+//        sugar.setText("" + profile.getSugar());
+//        protein.setText("" + profile.getProtein());
     }
 
     @Override

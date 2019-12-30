@@ -3,36 +3,30 @@ package de.seibushin.nutrigo.view.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import de.seibushin.nutrigo.Database;
+
+import java.util.List;
+
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
+import de.seibushin.nutrigo.view.activity.CreateMealActivity;
+import de.seibushin.nutrigo.view.adapter.ClickListener;
+import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
-import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
  */
-public class FragmentMeal extends Fragment {
-//    private OnListFragmentInteractionListener mListener;
-
-    private NutritionAdapter adapter;
+public class FragmentMeal extends FragmentList {
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -63,17 +57,28 @@ public class FragmentMeal extends Fragment {
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
+            recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    Meal meal = (Meal) adapter.getItem(position);
 
-            updateMeal(Database.getInstance().getAllMeals());
+                    // add food to the day
+                }
 
-            // subscribe to changes
-            Database.getInstance().subscribeToFoods(this::updateMeal);
+                @Override
+                public void onLongClick(View view, int position) {
+
+                }
+            }));
+
+
         }
         return view;
     }
 
     /**
      * Update meals
+     *
      * @param meals
      */
     private void updateMeal(List<NutritionUnit> meals) {
@@ -103,36 +108,13 @@ public class FragmentMeal extends Fragment {
 //    }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        menu.findItem(R.id.action_day).setVisible(false);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-//                startActivity(new Intent(getContext(), CreateMealActivity.class));
+                startActivity(new Intent(getContext(), CreateMealActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
     }
 }

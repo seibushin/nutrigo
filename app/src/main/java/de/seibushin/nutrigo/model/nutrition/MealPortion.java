@@ -1,57 +1,58 @@
 package de.seibushin.nutrigo.model.nutrition;
 
-public class FoodPortion implements NutritionUnit {
-    private Food food;
+public class MealPortion implements NutritionUnit {
+
+    private Meal meal;
     private double portion;
 
-    public FoodPortion(Food food, double portion) {
-        this.food = food;
+    public MealPortion(Meal meal, double portion) {
+        this.meal = meal;
         this.portion = portion;
     }
 
     @Override
     public int getId() {
-        return food.getId();
+        return meal.getId();
     }
 
     @Override
     public String getName() {
-        return food.getName();
+        return meal.getName();
     }
 
     @Override
     public NutritionType getType() {
-        return NutritionType.FOOD;
+        return NutritionType.MEAL;
     }
 
     @Override
     public double getKcal() {
-        return portionize(food.getKcal());
+        return portionize(meal.getKcal());
     }
 
     @Override
     public double getFat() {
-        return portionize(food.getFat());
+        return portionize(meal.getFat());
     }
 
     @Override
     public double getCarbs() {
-        return portionize(food.getCarbs());
+        return portionize(meal.getCarbs());
     }
 
     @Override
     public double getSugar() {
-        return portionize(food.getSugar());
+        return portionize(meal.getSugar());
     }
 
     @Override
     public double getProtein() {
-        return portionize(food.getProtein());
+        return portionize(meal.getProtein());
     }
 
     @Override
     public double getWeight() {
-        return food.getWeight();
+        return meal.getWeight();
     }
 
     @Override
@@ -66,6 +67,6 @@ public class FoodPortion implements NutritionUnit {
      * @return
      */
     private double portionize(double v) {
-        return v * portion / food.getWeight();
+        return v * portion;
     }
 }

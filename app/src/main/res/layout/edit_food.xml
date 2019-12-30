@@ -54,7 +54,7 @@
             app:layout_constraintTop_toBottomOf="@+id/hint">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ti_tag"
+                android:id="@+id/ti_weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"

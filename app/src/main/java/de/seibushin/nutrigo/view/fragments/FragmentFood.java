@@ -4,35 +4,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import de.seibushin.nutrigo.Database;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
+import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
+import de.seibushin.nutrigo.view.adapter.ClickListener;
+import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
-import de.seibushin.nutrigo.dummy.DummyContent.DummyItem;
+import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
  */
-public class FragmentFood extends Fragment {
-//    private OnListFragmentInteractionListener mListener;
-
-    private NutritionAdapter adapter;
+public class FragmentFood extends FragmentList {
+    private static final int UNDO_DURATION = 5000;
+    private FoodViewModel foodViewModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -64,50 +65,36 @@ public class FragmentFood extends Fragment {
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(llm);
             recyclerView.addItemDecoration(did);
+            recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    Food food = (Food) adapter.getItem(position);
+                    // add food to the day
 
-            updateFood(Database.getInstance().getAllFoods());
 
-            // subscribe to changes
-            Database.getInstance().subscribeToFoods(this::updateFood);
+                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                                // remove food from day
+                            }))
+                            .show();
+                }
+
+                @Override
+                public void onLongClick(View view, int position) {
+                    Food food = (Food) adapter.getItem(position);
+                    foodViewModel.delete(food);
+
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
+                            .show();
+                }
+            }));
+
+            foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
+            foodViewModel.getAllFood().observe(getViewLifecycleOwner(), foods -> adapter.setItems(new ArrayList<>(foods)));
+
         }
         return view;
-    }
-
-    /**
-     * Update foods
-     * @param foods
-     */
-    private void updateFood(List<NutritionUnit> foods) {
-        System.out.println("UPDATE FOOD");
-        getActivity().runOnUiThread(() -> {
-            adapter.setItems(foods);
-            adapter.notifyDataSetChanged();
-        });
-    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        menu.findItem(R.id.action_day).setVisible(false);
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -119,20 +106,5 @@ public class FragmentFood extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
     }
 }

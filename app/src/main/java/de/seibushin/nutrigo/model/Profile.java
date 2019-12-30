@@ -1,10 +1,6 @@
 package de.seibushin.nutrigo.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Profile {
-    private final List<ChangeListener> changeListeners = new ArrayList<>();
 
     private int kcal = 2000;
     private int fat = 200;
@@ -35,8 +31,6 @@ public class Profile {
      */
     public void setKcal(int kcal) {
         this.kcal = kcal;
-        changed();
-        changed();
     }
 
     /**
@@ -55,7 +49,6 @@ public class Profile {
      */
     public void setFat(int fat) {
         this.fat = fat;
-        changed();
     }
 
     /**
@@ -74,7 +67,6 @@ public class Profile {
      */
     public void setCarbs(int carbs) {
         this.carbs = carbs;
-        changed();
     }
 
     /**
@@ -93,7 +85,6 @@ public class Profile {
      */
     public void setSugar(int sugar) {
         this.sugar = sugar;
-        changed();
     }
 
     /**
@@ -112,24 +103,5 @@ public class Profile {
      */
     public void setProtein(int protein) {
         this.protein = protein;
-        changed();
-    }
-
-    /**
-     * Set the onChangeListener
-     *
-     * @param changeListener changeListener
-     */
-    public void addChangeListener(ChangeListener changeListener) {
-        changeListeners.add(changeListener);
-    }
-
-    /**
-     * notify the listener about the changes
-     */
-    private void changed() {
-        for (ChangeListener changeListener : changeListeners) {
-            changeListener.change();
-        }
     }
 }
