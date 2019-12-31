@@ -11,7 +11,7 @@ import de.seibushin.nutrigo.model.nutrition.Food;
 public class DayFood {
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    public int id;
+    public int fdID;
 
     @ForeignKey(entity = Food.class, parentColumns = "id", childColumns = "fid")
     public int fid;

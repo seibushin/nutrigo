@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
@@ -73,9 +73,9 @@ public class FragmentFood extends FragmentList {
                     Food food = (Food) adapter.getItem(position);
                     // add food to the day
 
-                    DayFood df = dayFoodViewModel.insert(food);
+                    FoodDay df = dayFoodViewModel.insert(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
+                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
                                 // remove food from day
                                 dayFoodViewModel.delete(df);
@@ -88,7 +88,7 @@ public class FragmentFood extends FragmentList {
                     Food food = (Food) adapter.getItem(position);
                     foodViewModel.delete(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
                             .show();
                 }

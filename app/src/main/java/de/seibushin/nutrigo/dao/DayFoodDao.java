@@ -2,23 +2,22 @@ package de.seibushin.nutrigo.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
 import java.util.List;
 
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
+import de.seibushin.nutrigo.model.nutrition.FoodDay;
 
 @Dao
 public interface DayFoodDao {
     @Insert
     long insert(DayFood dayFood);
 
-    @Query("SELECT food.*, dayfood.serving FROM food" +
+    @Query("SELECT food.*, dayfood.serving, dayfood.fdID, dayfood.date, dayfood.timestamp FROM food" +
             " INNER JOIN dayfood on food.id = dayfood.fid" +
             " WHERE dayfood.date = :day")
-    LiveData<List<FoodPortion>> getFoods(long day);
+    LiveData<List<FoodDay>> getFoods(long day);
 
     @Query("SELECT date FROM dayfood" +
             " GROUP BY date")
@@ -27,6 +26,6 @@ public interface DayFoodDao {
     @Insert
     void insertAll(DayFood... dayFoods);
 
-    @Delete
-    void delete(DayFood dayFood);
+    @Query("DELETE FROM dayfood WHERE dayfood.fdID = :id")
+    void delete(int id);
 }

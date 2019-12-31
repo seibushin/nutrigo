@@ -1,7 +1,14 @@
 package de.seibushin.nutrigo.model;
 
-public class Profile {
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
+public class Profile {
+    @PrimaryKey
+    @NonNull
+    private int id = 1;
     private int kcal = 2000;
     private int fat = 200;
     private int carbs = 200;
@@ -13,6 +20,14 @@ public class Profile {
      */
     public Profile() {
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**

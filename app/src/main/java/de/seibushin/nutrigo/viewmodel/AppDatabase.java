@@ -17,12 +17,15 @@ import java.util.concurrent.Executors;
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.FoodDao;
+import de.seibushin.nutrigo.dao.ProfileDao;
+import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 
-@Database(entities = {Food.class, DayFood.class}, version = 1, exportSchema = false)
+@Database(entities = {Food.class, DayFood.class, Profile.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FoodDao foodDao();
     public abstract DayFoodDao dayFoodDao();
+    public abstract ProfileDao profileDao();
 
     private static volatile AppDatabase INSTANCE;
     private static final int THREADS = 4;
@@ -52,6 +55,10 @@ public abstract class AppDatabase extends RoomDatabase {
                 FoodDao foodDao = INSTANCE.foodDao();
                 Food food = new Food("Avocado", 138, 1.4, 12.5, 3.6, 0.4, 100, 100);
                 foodDao.insert(food);
+
+                ProfileDao profileDao = INSTANCE.profileDao();
+                Profile profile = new Profile();
+                profileDao.insert(profile);
             });
         }
     };

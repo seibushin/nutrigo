@@ -16,12 +16,18 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
+import de.seibushin.nutrigo.model.nutrition.FoodDay;
+import de.seibushin.nutrigo.model.nutrition.NutritionType;
+import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CalendarActivity;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
@@ -29,6 +35,7 @@ import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.widget.ProgressCircle;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
+import de.seibushin.nutrigo.viewmodel.ProfileViewModel;
 
 /**
  * A fragment representing a list of Items.
@@ -36,6 +43,7 @@ import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
  */
 public class FragmentDay extends Fragment {
     private DayFoodViewModel dayFoodViewModel;
+    private ProfileViewModel profileViewModel;
 
     private NutritionAdapter adapter;
 
@@ -90,13 +98,15 @@ public class FragmentDay extends Fragment {
 
             @Override
             public void onLongClick(View view, int position) {
-                // get dayFood to delete
-//                DayFood food = (Food) adapter.getItem(position);
-//                dayFoodViewModel.delete(food);
-//
-//                Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
-//                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
-//                        .show();
+                NutritionUnit nu = adapter.getItem(position);
+                if (nu.getType() == NutritionType.FOOD) {
+                    FoodDay food = (FoodDay) nu;
+                    dayFoodViewModel.delete(food);
+
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
+                        .show();
+                };
             }
         }));
 
@@ -110,7 +120,7 @@ public class FragmentDay extends Fragment {
             double carbs = 0;
             double sugar = 0;
 
-            for (FoodPortion food : foods) {
+            for (FoodDay food : foods) {
                 kcal += food.getKcal();
                 protein+= food.getProtein();
                 fat += food.getFat();
@@ -125,6 +135,14 @@ public class FragmentDay extends Fragment {
             pc_protein.setProgress((int)protein);
         });
 
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        profileViewModel.getProfile().observe(getViewLifecycleOwner(), profile -> {
+            pc_kcal.setMax(profile.getKcal());
+            pc_carbs.setMax(profile.getCarbs());
+            pc_fat.setMax(profile.getFat());
+            pc_protein.setMax(profile.getProtein());
+        });
+
         return view;
     }
 
@@ -133,7 +151,7 @@ public class FragmentDay extends Fragment {
      */
     private void showProfile() {
         ProfileDialog dialog = new ProfileDialog();
-        dialog.show(getFragmentManager());
+        dialog.show(getParentFragmentManager());
     }
 
 

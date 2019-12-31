@@ -9,12 +9,12 @@ import java.util.List;
 
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.model.nutrition.Food;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
+import de.seibushin.nutrigo.model.nutrition.FoodDay;
 
 public class DayFoodViewModel extends AndroidViewModel {
     private Repo repo;
 
-    private LiveData<List<FoodPortion>> dayFood;
+    private LiveData<List<FoodDay>> dayFood;
 
     public DayFoodViewModel(Application application) {
         super(application);
@@ -22,16 +22,20 @@ public class DayFoodViewModel extends AndroidViewModel {
         dayFood = repo.getDayFood();
     }
 
-    public LiveData<List<FoodPortion>> getDayFood() {
+    public LiveData<List<FoodDay>> getDayFood() {
         return dayFood;
     }
 
-    public DayFood insert(Food food) {
+    public FoodDay insert(Food food) {
         return repo.insertDayFood(food);
     }
 
-    public void delete(DayFood dayFood) {
-        repo.deleteDayFood(dayFood);
+    public FoodDay insertDayFood(FoodDay food) {
+        return repo.insertDayFood(food);
+    }
+
+    public void delete(FoodDay food) {
+        repo.deleteDayFood(food);
     }
 
 }

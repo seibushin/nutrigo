@@ -9,13 +9,18 @@ import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.Profile;
+import de.seibushin.nutrigo.viewmodel.ProfileViewModel;
 
 public class ProfileDialog extends DialogFragment {
     private static final String TAG = "TargetFragment";
+    private ProfileViewModel profileViewModel;
+    private Profile profile;
 
     private TextInputEditText kcal;
     private EditText fat;
@@ -39,8 +44,11 @@ public class ProfileDialog extends DialogFragment {
         sugar = view.findViewById(R.id.ti_sugar);
         protein = view.findViewById(R.id.ti_protein);
 
-        // update ui
-        updateUI();
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        profileViewModel.getProfile().observe(this, profile -> {
+            this.profile = profile;
+            updateUI();
+        });
 
         return dialog;
     }
@@ -58,24 +66,24 @@ public class ProfileDialog extends DialogFragment {
      * Update the profile with the new values
      */
     private void updateProfile() {
-//        Profile profile = Database.getInstance().getProfile();
-//        profile.setKcal(Integer.parseInt(kcal.getText().toString()));
-//        profile.setFat(Integer.parseInt(fat.getText().toString()));
-//        profile.setCarbs(Integer.parseInt(carbs.getText().toString()));
-//        profile.setSugar(Integer.parseInt(sugar.getText().toString()));
-//        profile.setProtein(Integer.parseInt(protein.getText().toString()));
+        profile.setKcal(Integer.parseInt(kcal.getText().toString()));
+        profile.setFat(Integer.parseInt(fat.getText().toString()));
+        profile.setCarbs(Integer.parseInt(carbs.getText().toString()));
+        profile.setSugar(Integer.parseInt(sugar.getText().toString()));
+        profile.setProtein(Integer.parseInt(protein.getText().toString()));
+
+        profileViewModel.update(profile);
     }
 
     /**
      * Update the ui showing the current values for the profile
      */
     private void updateUI() {
-//        Profile profile = Database.getInstance().getProfile();
-//        kcal.setText("" + profile.getKcal());
-//        fat.setText("" + profile.getFat());
-//        carbs.setText("" + profile.getCarbs());
-//        sugar.setText("" + profile.getSugar());
-//        protein.setText("" + profile.getProtein());
+        kcal.setText("" + profile.getKcal());
+        fat.setText("" + profile.getFat());
+        carbs.setText("" + profile.getCarbs());
+        sugar.setText("" + profile.getSugar());
+        protein.setText("" + profile.getProtein());
     }
 
     @Override
