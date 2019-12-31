@@ -22,8 +22,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Executors;
 
+import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
@@ -144,6 +146,13 @@ public class FragmentDay extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        tv_date.setText(df.format(new Date(Nutrigo.selectedDay)));
     }
 
     /**

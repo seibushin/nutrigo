@@ -13,6 +13,7 @@ import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import de.seibushin.nutrigo.Nutrigo;
@@ -40,6 +41,11 @@ public class CalendarActivity extends AppCompatActivity {
         dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
         dayFoodViewModel.getDays().observe(this, days -> {
             List<EventDay> events = new ArrayList<>();
+            days.forEach(day -> {
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(day);
+                events.add(new EventDay(c, getDrawable(R.drawable.ic_food)));
+            });
             calendarView.setEvents(events);
         });
     }
@@ -48,15 +54,15 @@ public class CalendarActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-//        try {
-////            calendarView.setDate(new Date(Database.getInstance().getSelectedDay().getTime()));
-//        } catch (OutOfDateRangeException e) {
-//            try {
-//                calendarView.setDate(new Date());
-//            } catch (OutOfDateRangeException e1) {
-//                e1.printStackTrace();
-//            }
-//        }
+        try {
+            calendarView.setDate(new Date(Nutrigo.selectedDay));
+        } catch (OutOfDateRangeException e) {
+            try {
+                calendarView.setDate(new Date());
+            } catch (OutOfDateRangeException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 
     private void setupCalendar() {
