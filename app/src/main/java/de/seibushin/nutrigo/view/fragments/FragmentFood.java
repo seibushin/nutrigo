@@ -20,11 +20,13 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
+import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 
 /**
@@ -32,8 +34,8 @@ import de.seibushin.nutrigo.viewmodel.FoodViewModel;
  * <p/>
  */
 public class FragmentFood extends FragmentList {
-    private static final int UNDO_DURATION = 5000;
     private FoodViewModel foodViewModel;
+    private DayFoodViewModel dayFoodViewModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,10 +73,12 @@ public class FragmentFood extends FragmentList {
                     Food food = (Food) adapter.getItem(position);
                     // add food to the day
 
+                    DayFood df = dayFoodViewModel.insert(food);
 
                     Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
                                 // remove food from day
+                                dayFoodViewModel.delete(df);
                             }))
                             .show();
                 }
@@ -92,6 +96,8 @@ public class FragmentFood extends FragmentList {
 
             foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
             foodViewModel.getAllFood().observe(getViewLifecycleOwner(), foods -> adapter.setItems(new ArrayList<>(foods)));
+
+            dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
 
         }
         return view;

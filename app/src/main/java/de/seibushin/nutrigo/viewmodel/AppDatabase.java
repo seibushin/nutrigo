@@ -14,12 +14,15 @@ import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.seibushin.nutrigo.dao.DayFood;
+import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.FoodDao;
 import de.seibushin.nutrigo.model.nutrition.Food;
 
-@Database(entities = {Food.class}, version = 1, exportSchema = false)
+@Database(entities = {Food.class, DayFood.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FoodDao foodDao();
+    public abstract DayFoodDao dayFoodDao();
 
     private static volatile AppDatabase INSTANCE;
     private static final int THREADS = 4;

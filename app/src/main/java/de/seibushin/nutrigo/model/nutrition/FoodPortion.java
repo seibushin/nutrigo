@@ -1,12 +1,20 @@
 package de.seibushin.nutrigo.model.nutrition;
 
-public class FoodPortion implements NutritionUnit {
-    private Food food;
-    private double portion;
+import androidx.room.Embedded;
 
-    public FoodPortion(Food food, double portion) {
+public class FoodPortion implements NutritionUnit {
+    @Embedded
+    private Food food;
+    private double serving;
+
+    public FoodPortion(Food food, double serving) {
         this.food = food;
-        this.portion = portion;
+        this.serving = serving;
+    }
+
+    public FoodPortion(int id, String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion, double serving) {
+        this.food = new Food(id, name, kcal, fat, carbs, sugar, protein, weight, portion);
+        this.serving = serving;
     }
 
     @Override
@@ -56,7 +64,7 @@ public class FoodPortion implements NutritionUnit {
 
     @Override
     public double getPortion() {
-        return portion;
+        return serving;
     }
 
     /**
@@ -66,6 +74,6 @@ public class FoodPortion implements NutritionUnit {
      * @return
      */
     private double portionize(double v) {
-        return v * portion / food.getWeight();
+        return v * serving / food.getWeight();
     }
 }

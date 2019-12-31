@@ -11,25 +11,31 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.view.activity.CalendarActivity;
+import de.seibushin.nutrigo.view.adapter.ClickListener;
+import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.widget.ProgressCircle;
+import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
  */
 public class FragmentDay extends Fragment {
-//    private OnListFragmentInteractionListener mListener;
+    private DayFoodViewModel dayFoodViewModel;
 
     private NutritionAdapter adapter;
 
@@ -40,8 +46,6 @@ public class FragmentDay extends Fragment {
     private TextView tv_date;
 
     private final DateFormat df = SimpleDateFormat.getDateInstance();
-
-    private long selectedDay = 0;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -78,6 +82,48 @@ public class FragmentDay extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(llm);
         recyclerView.addItemDecoration(did);
+        recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                // set serving
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                // get dayFood to delete
+//                DayFood food = (Food) adapter.getItem(position);
+//                dayFoodViewModel.delete(food);
+//
+//                Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_SHORT)
+//                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
+//                        .show();
+            }
+        }));
+
+        dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
+        dayFoodViewModel.getDayFood().observe(getViewLifecycleOwner(), foods -> {
+            adapter.setItems(new ArrayList<>(foods));
+
+            double kcal = 0;
+            double protein = 0;
+            double fat = 0;
+            double carbs = 0;
+            double sugar = 0;
+
+            for (FoodPortion food : foods) {
+                kcal += food.getKcal();
+                protein+= food.getProtein();
+                fat += food.getFat();
+                carbs += food.getCarbs();
+                sugar += food.getSugar();
+            }
+
+            // update progress
+            pc_kcal.setProgress((int)kcal);
+            pc_carbs.setProgress((int)carbs);
+            pc_fat.setProgress((int)fat);
+            pc_protein.setProgress((int)protein);
+        });
 
         return view;
     }
@@ -90,22 +136,6 @@ public class FragmentDay extends Fragment {
         dialog.show(getFragmentManager());
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
