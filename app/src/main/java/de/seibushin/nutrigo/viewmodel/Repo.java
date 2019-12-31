@@ -24,6 +24,7 @@ class Repo {
     private LiveData<List<FoodDay>> dayFood;
     private ProfileDao profileDao;
     private LiveData<Profile> profile;
+    private LiveData<List<Long>> days;
 
     Repo(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
@@ -32,6 +33,7 @@ class Repo {
 
         dayFoodDao = db.dayFoodDao();
         dayFood = dayFoodDao.getFoods(Nutrigo.selectedDay);
+        days = dayFoodDao.getDays();
 
         profileDao = db.profileDao();
         profile = profileDao.getProfile();
@@ -96,6 +98,10 @@ class Repo {
         fd.timestamp = df.timestamp;
 
         return fd;
+    }
+
+    LiveData<List<Long>> getDays() {
+        return days;
     }
 
     void deleteDayFood(FoodDay food) {

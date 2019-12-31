@@ -5,16 +5,24 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
+import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 
 public class CalendarActivity extends AppCompatActivity {
     private CalendarView calendarView;
+
+    private DayFoodViewModel dayFoodViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +36,12 @@ public class CalendarActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
 
         setupCalendar();
+
+        dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
+        dayFoodViewModel.getDays().observe(this, days -> {
+            List<EventDay> events = new ArrayList<>();
+            calendarView.setEvents(events);
+        });
     }
 
     @Override
@@ -48,11 +62,10 @@ public class CalendarActivity extends AppCompatActivity {
     private void setupCalendar() {
         calendarView.setMaximumDate(Calendar.getInstance());
 
-//        calendarView.setEvents(Database.getInstance().getAllDays());
         calendarView.setOnDayClickListener(eventDay -> {
             try {
                 calendarView.setDate(eventDay.getCalendar());
-//                Database.getInstance().selectDay(eventDay.getCalendar());
+                Nutrigo.setSelectedDay(eventDay.getCalendar().getTime().getTime());
             } catch (OutOfDateRangeException e) {
                 e.printStackTrace();
             }

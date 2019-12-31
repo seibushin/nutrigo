@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 
@@ -15,11 +14,13 @@ public class DayFoodViewModel extends AndroidViewModel {
     private Repo repo;
 
     private LiveData<List<FoodDay>> dayFood;
+    private LiveData<List<Long>> days;
 
     public DayFoodViewModel(Application application) {
         super(application);
         repo = new Repo(application);
         dayFood = repo.getDayFood();
+        days = repo.getDays();
     }
 
     public LiveData<List<FoodDay>> getDayFood() {
@@ -36,6 +37,10 @@ public class DayFoodViewModel extends AndroidViewModel {
 
     public void delete(FoodDay food) {
         repo.deleteDayFood(food);
+    }
+
+    public LiveData<List<Long>> getDays() {
+        return days;
     }
 
 }

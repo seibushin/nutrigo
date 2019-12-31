@@ -6,6 +6,10 @@ import java.util.Date;
 public class Nutrigo {
     public static long selectedDay = today().getTime();
 
+    public static void setSelectedDay(long selectedDay) {
+        Nutrigo.selectedDay = selectedDay;
+    }
+
     /**
      * Get the current day at 0:00:00
      *

@@ -21,7 +21,7 @@ public interface DayFoodDao {
 
     @Query("SELECT date FROM dayfood" +
             " GROUP BY date")
-    List<Long> getDays();
+    LiveData<List<Long>> getDays();
 
     @Insert
     void insertAll(DayFood... dayFoods);
