@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
@@ -70,8 +71,9 @@ public class FragmentFood extends FragmentList {
             recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    Food food = (Food) adapter.getItem(position);
+                    FoodPortion foodPortion = (FoodPortion) adapter.getItem(position);
                     // add food to the day
+                    Food food = foodPortion.getFood();
 
                     FoodDay df = dayFoodViewModel.insert(food);
 
@@ -85,7 +87,9 @@ public class FragmentFood extends FragmentList {
 
                 @Override
                 public void onLongClick(View view, int position) {
-                    Food food = (Food) adapter.getItem(position);
+                    FoodPortion foodPortion = (FoodPortion) adapter.getItem(position);
+                    // add food to the day
+                    Food food = foodPortion.getFood();
                     foodViewModel.delete(food);
 
                     Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)

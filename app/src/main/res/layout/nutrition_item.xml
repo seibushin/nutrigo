@@ -109,7 +109,8 @@
             android:text="@string/zero"
             android:textSize="12sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_portion"
-            app:layout_constraintStart_toEndOf="@+id/tv_portion" />
+            app:layout_constraintStart_toEndOf="@+id/tv_portion"
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/tv_portion"

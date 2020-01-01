@@ -28,4 +28,7 @@ public interface DayFoodDao {
 
     @Query("DELETE FROM dayfood WHERE dayfood.fdID = :id")
     void delete(int id);
+
+    @Query("UPDATE dayfood SET serving = :serving WHERE dayfood.fdID = :fdID")
+    void update(int fdID, double serving);
 }

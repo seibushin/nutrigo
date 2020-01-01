@@ -39,6 +39,10 @@ public class DayFoodViewModel extends AndroidViewModel {
         repo.deleteDayFood(food);
     }
 
+    public void update(FoodDay food, double serving) {
+        repo.updateDayFood(food, serving);
+    }
+
     public LiveData<List<Long>> getDays() {
         return days;
     }

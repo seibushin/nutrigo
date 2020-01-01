@@ -8,11 +8,12 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 
 public class FoodViewModel extends AndroidViewModel {
     private Repo repo;
 
-    private LiveData<List<Food>> allFood;
+    private LiveData<List<FoodPortion>> allFood;
 
     public FoodViewModel (Application application) {
         super(application);
@@ -20,7 +21,7 @@ public class FoodViewModel extends AndroidViewModel {
         allFood = repo.getAllFood();
     }
 
-    public LiveData<List<Food>> getAllFood() {
+    public LiveData<List<FoodPortion>> getAllFood() {
         return allFood;
     }
 

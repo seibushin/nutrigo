@@ -10,11 +10,12 @@ import androidx.room.Update;
 import java.util.List;
 
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 
 @Dao
 public interface FoodDao {
-    @Query("SELECT * FROM food")
-    LiveData<List<Food>> getAll();
+    @Query("SELECT *, food.portion as serving FROM food")
+    LiveData<List<FoodPortion>> getAll();
 
     @Insert
     void insertAll(Food... foods);

@@ -17,6 +17,10 @@ public class FoodPortion implements NutritionUnit {
         this.serving = serving;
     }
 
+    public Food getFood() {
+        return food;
+    }
+
     @Override
     public int getId() {
         return food.getId();

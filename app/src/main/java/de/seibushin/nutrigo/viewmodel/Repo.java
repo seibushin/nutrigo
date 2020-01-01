@@ -16,11 +16,12 @@ import de.seibushin.nutrigo.dao.ProfileDao;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
+import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 
 class Repo {
     private FoodDao foodDao;
     private DayFoodDao dayFoodDao;
-    private LiveData<List<Food>> allFood;
+    private LiveData<List<FoodPortion>> allFood;
     private LiveData<List<FoodDay>> dayFood;
     private ProfileDao profileDao;
     private LiveData<Profile> profile;
@@ -39,7 +40,7 @@ class Repo {
         profile = profileDao.getProfile();
     }
 
-    LiveData<List<Food>> getAllFood() {
+    LiveData<List<FoodPortion>> getAllFood() {
         return allFood;
     }
 
@@ -106,6 +107,10 @@ class Repo {
 
     void deleteDayFood(FoodDay food) {
         AppDatabase.writeExecutor.execute(() -> dayFoodDao.delete(food.fdID));
+    }
+
+    void updateDayFood(FoodDay food, double serving) {
+        AppDatabase.writeExecutor.execute(() -> dayFoodDao.update(food.fdID, serving));
     }
 
     LiveData<Profile> getProfile() {
