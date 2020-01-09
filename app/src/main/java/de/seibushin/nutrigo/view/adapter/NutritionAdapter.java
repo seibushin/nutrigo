@@ -43,7 +43,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
 
         @Override
         public boolean areItemsTheSame(Object o1, Object o2) {
-            return false;
+            return o1 == o2;
         }
     });
 
@@ -116,6 +116,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
     public void remove(NutritionUnit food) {
         data.remove(food);
         dataFiltered.remove(food);
+        System.out.println(data.size() + " " + dataFiltered.size());
     }
 
     @Override

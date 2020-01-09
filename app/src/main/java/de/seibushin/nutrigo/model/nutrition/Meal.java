@@ -1,6 +1,7 @@
 package de.seibushin.nutrigo.model.nutrition;
 
 import androidx.annotation.NonNull;
+import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -14,6 +15,7 @@ public class Meal implements NutritionUnit {
     @NonNull
     private int id;
     private String name;
+    @Ignore
     private final List<FoodPortion> foods = new ArrayList<>();
 
     public Meal() {

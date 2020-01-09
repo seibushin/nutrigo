@@ -2,11 +2,14 @@ package de.seibushin.nutrigo.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,9 +24,15 @@ import static android.app.Activity.RESULT_OK;
 public class ServingDialog extends DialogFragment {
     public static final String EXTRA_SERVING = "de.seibushin.nutrigo.serving.REPLY";
     private static final String TAG = "ServingDialog";
-    private DayFoodViewModel dayFoodViewModel;
 
     private TextInputEditText serving;
+
+    public interface ResultListener {
+        void result(Double serving);
+    }
+
+    public ResultListener resultListener;
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -37,11 +46,14 @@ public class ServingDialog extends DialogFragment {
                     Intent reply = new Intent();
                     reply.putExtra(EXTRA_SERVING, Double.parseDouble(serving.getText().toString()));
 
-                    getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, reply);
+                    try {
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, reply);
+                    } catch (NullPointerException e) {
+                        resultListener.result(Double.parseDouble(serving.getText().toString()));
+                    }
+
                 })
                 .create();
-
-        dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
 
         return dialog;
     }
@@ -59,5 +71,15 @@ public class ServingDialog extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            resultListener = (ResultListener) getActivity();
+        } catch (ClassCastException e) {
+            Log.e("ServingDialog", e.getMessage(), e);
+        }
     }
 }

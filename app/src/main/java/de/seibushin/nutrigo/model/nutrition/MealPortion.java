@@ -1,7 +1,9 @@
 package de.seibushin.nutrigo.model.nutrition;
 
-public class MealPortion implements NutritionUnit {
+import androidx.room.Embedded;
 
+public class MealPortion implements NutritionUnit {
+    @Embedded
     private Meal meal;
     private double portion;
 

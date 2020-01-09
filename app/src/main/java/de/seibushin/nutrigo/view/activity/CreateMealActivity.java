@@ -1,6 +1,7 @@
 package de.seibushin.nutrigo.view.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,23 +16,32 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.model.nutrition.Meal;
+import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
+import de.seibushin.nutrigo.view.dialog.ServingDialog;
+import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 
-public class CreateMealActivity extends AppCompatActivity {
+public class CreateMealActivity extends AppCompatActivity implements ServingDialog.ResultListener {
     private CoordinatorLayout outerWrapper;
 
     private TextInputEditText name;
@@ -42,6 +52,12 @@ public class CreateMealActivity extends AppCompatActivity {
     private RecyclerView rv_search;
     private NutritionAdapter search_adapter;
     private NutritionAdapter food_adapter;
+
+    private FoodViewModel foodViewModel;
+    private final ServingDialog servingDialog = new ServingDialog();
+    private FoodPortion currentFood;
+    private int currentPosition;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,7 +92,6 @@ public class CreateMealActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                System.out.println("Text changed " + s);
                 if (s.toString().endsWith("  ")) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(name.getWindowToken(), 0);
@@ -108,6 +123,13 @@ public class CreateMealActivity extends AppCompatActivity {
         rv_foods.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_foods, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                NutritionUnit nu = food_adapter.getItem(position);
+                if (nu.getType() == NutritionType.FOOD) {
+                    currentFood = (FoodPortion) nu;
+                    currentPosition = position;
+                }
+
+                servingDialog.show(getSupportFragmentManager());
             }
 
             @Override
@@ -116,6 +138,8 @@ public class CreateMealActivity extends AppCompatActivity {
 
                 // add searched food to actual meal food
                 food_adapter.remove(food);
+                food_adapter.notifyDataSetChanged();
+//                food_adapter.notifyItemRemoved(position);
             }
         }));
 
@@ -123,19 +147,18 @@ public class CreateMealActivity extends AppCompatActivity {
         DividerItemDecoration did2 = new DividerItemDecoration(this, llm2.getOrientation());
         did2.setDrawable(getApplicationContext().getDrawable(R.drawable.divider));
 
-        rv_search = findViewById(R.id.rv_search);
         search_adapter = new NutritionAdapter();
-//        search_adapter.setItems(Database.getInstance().getAllFoods());
+        rv_search = findViewById(R.id.rv_search);
         rv_search.setAdapter(search_adapter);
         rv_search.setLayoutManager(llm2);
         rv_search.addItemDecoration(did2);
         rv_search.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_search, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Food food = (Food) search_adapter.getItem(position);
+                FoodPortion food = (FoodPortion) search_adapter.getItem(position);
 
                 // add searched food to actual meal food
-                food_adapter.add(new FoodPortion(food, food.getPortion()));
+                food_adapter.add(food);
             }
 
             @Override
@@ -143,6 +166,10 @@ public class CreateMealActivity extends AppCompatActivity {
 
             }
         }));
+
+        foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
+        foodViewModel.getAllFood().observe(this, foods -> search_adapter.setItems(new ArrayList<>(foods)));
+
     }
 
     /**
@@ -213,6 +240,16 @@ public class CreateMealActivity extends AppCompatActivity {
             builder.create().show();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void result(Double serving) {
+        if (currentFood != null && currentPosition != -1) {
+            currentFood.setPortion(serving);
+            food_adapter.notifyItemChanged(currentPosition);
+            currentPosition = -1;
+            currentFood = null;
         }
     }
 }

@@ -145,6 +145,21 @@ public class Food implements NutritionUnit {
         this.portion = portion;
     }
 
+    @Override
+    public String toString() {
+        return "Food{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", kcal=" + kcal +
+                ", fat=" + fat +
+                ", carbs=" + carbs +
+                ", sugar=" + sugar +
+                ", protein=" + protein +
+                ", weight=" + weight +
+                ", portion=" + portion +
+                '}';
+    }
+
     public static Food[] populateData() {
         return new Food[]{
                 new Food(1, "Avocado", 138, 1.4, 12.5, 3.6, 0.4, 100, 100),

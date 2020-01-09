@@ -1,5 +1,6 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 
 public class FoodPortion implements NutritionUnit {
@@ -71,6 +72,10 @@ public class FoodPortion implements NutritionUnit {
         return serving;
     }
 
+    public void setPortion(double portion) {
+        this.serving = portion;
+    }
+
     /**
      * Portionize the value according to the portion and the foods values
      *
@@ -79,5 +84,13 @@ public class FoodPortion implements NutritionUnit {
      */
     private double portionize(double v) {
         return v * serving / food.getWeight();
+    }
+
+    @Override
+    public String toString() {
+        return "FoodPortion{" +
+                "food=" + food +
+                ", serving=" + serving +
+                '}';
     }
 }

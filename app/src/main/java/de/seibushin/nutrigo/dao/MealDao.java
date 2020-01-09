@@ -10,22 +10,23 @@ import androidx.room.Update;
 import java.util.List;
 
 import de.seibushin.nutrigo.model.nutrition.Food;
+import de.seibushin.nutrigo.model.nutrition.Meal;
 
 @Dao
 public interface MealDao {
     @Query("SELECT * FROM meal")
-    LiveData<List<Food>> getAll();
+    LiveData<List<Meal>> getAll();
 
     @Insert
-    void insertAll(Food... foods);
+    void insertAll(Meal... meals);
 
     @Insert
-    void insert(Food food);
+    void insert(Meal meal);
 
     @Delete
-    void delete(Food food);
+    void delete(Meal meal);
 
     @Update
-    void update(Food food);
+    void update(Meal meal);
 
 }
