@@ -88,7 +88,7 @@ public class FragmentDay extends Fragment {
             double old_serving = currentFood.serving;
             dayFoodViewModel.update(currentFood, serving);
 
-            Snackbar.make(getView(), getString(R.string.undo_serving_changed, currentFood.getName()), BaseTransientBottomBar.LENGTH_LONG)
+            Snackbar.make(getView(), getString(R.string.undo_serving_changed, currentFood.getName()), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.update(currentFood, old_serving)))
                     .show();
         }
@@ -127,17 +127,6 @@ public class FragmentDay extends Fragment {
                 }
 
                 servingDialog.show(getParentFragmentManager());
-
-//                // set serving
-//                NutritionUnit nu = adapter.getItem(position);
-//                if (nu.getType() == NutritionType.FOOD) {
-//                    FoodDay food = (FoodDay) nu;
-//                    dayFoodViewModel.update(food);
-//
-//                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
-//                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
-//                            .show();
-//                };
             }
 
             @Override
@@ -147,7 +136,7 @@ public class FragmentDay extends Fragment {
                     FoodDay food = (FoodDay) nu;
                     dayFoodViewModel.delete(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
                             .show();
                 }

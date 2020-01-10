@@ -20,7 +20,7 @@ public class DayFoodViewModel extends AndroidViewModel {
         super(application);
         repo = new Repo(application);
         dayFood = repo.getDayFood();
-        days = repo.getDays();
+        days = repo.getDaysFood();
     }
 
     public LiveData<List<FoodDay>> getDayFood() {

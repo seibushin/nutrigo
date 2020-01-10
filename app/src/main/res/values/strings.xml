@@ -35,7 +35,7 @@
     <string name="add_meal_dialog">Add Meal?</string>
     <string name="add_meal_dialog_pos">yes</string>
     <string name="add_meal_dialog_neg">no</string>
-    <string name="add_meal_insert">Meal was added</string>
+    <string name="add_meal_insert">Meal %1$s was added</string>
     <string name="add_meal_insert_error">Error occured while adding!</string>
 
     <string name="action_add">Add</string>
@@ -49,4 +49,5 @@
     <string name="undo_food_deleted">%1$s deleted!</string>
     <string name="undo_food_added_day">%1$s added to selected day!</string>
     <string name="undo_serving_changed">%1$s serving changed!</string>
+    <string name="add_meal_missing">Please add Name and Foods!</string>
 </resources>

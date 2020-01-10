@@ -116,7 +116,13 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
     public void remove(NutritionUnit food) {
         data.remove(food);
         dataFiltered.remove(food);
-        System.out.println(data.size() + " " + dataFiltered.size());
+    }
+
+    public void remove(int position) {
+        NutritionUnit nu = dataFiltered.removeItemAt(position);
+        data.remove(nu);
+
+        notifyDataSetChanged();
     }
 
     @Override

@@ -77,7 +77,7 @@ public class FragmentFood extends FragmentList {
 
                     FoodDay df = dayFoodViewModel.insert(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
+                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
                                 // remove food from day
                                 dayFoodViewModel.delete(df);
@@ -92,7 +92,7 @@ public class FragmentFood extends FragmentList {
                     Food food = foodPortion.getFood();
                     foodViewModel.delete(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), BaseTransientBottomBar.LENGTH_LONG)
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
                             .show();
                 }

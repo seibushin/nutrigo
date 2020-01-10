@@ -40,6 +40,7 @@ import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
+import de.seibushin.nutrigo.viewmodel.MealViewModel;
 
 public class CreateMealActivity extends AppCompatActivity implements ServingDialog.ResultListener {
     private CoordinatorLayout outerWrapper;
@@ -57,6 +58,8 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
     private final ServingDialog servingDialog = new ServingDialog();
     private FoodPortion currentFood;
     private int currentPosition;
+
+    private MealViewModel mealViewModel;
 
 
     @Override
@@ -134,12 +137,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
 
             @Override
             public void onLongClick(View view, int position) {
-                NutritionUnit food = food_adapter.getItem(position);
-
-                // add searched food to actual meal food
-                food_adapter.remove(food);
-                food_adapter.notifyDataSetChanged();
-//                food_adapter.notifyItemRemoved(position);
+                food_adapter.remove(position);
             }
         }));
 
@@ -170,6 +168,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
         foodViewModel.getAllFood().observe(this, foods -> search_adapter.setItems(new ArrayList<>(foods)));
 
+        mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
     }
 
     /**
@@ -182,11 +181,12 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         try {
             String _name = name.getText().toString().trim();
             String _tag = tag.getText().toString().trim();
-            Meal meal = new Meal(0, _name);
+            Meal meal = new Meal(_name);
             // add all selected food portions
             food_adapter.getData().forEach(food -> meal.addFood((FoodPortion) food));
-//            Database.getInstance().addMeal(meal);
-            Snackbar.make(outerWrapper, R.string.add_meal_insert, Snackbar.LENGTH_LONG).show();
+
+            mealViewModel.insert(meal);
+            Snackbar.make(outerWrapper, getString(R.string.add_meal_insert, meal.getName()), Snackbar.LENGTH_LONG).show();
             resetMeal();
         } catch (NumberFormatException e) {
             Snackbar.make(outerWrapper, R.string.add_meal_insert_error, Snackbar.LENGTH_LONG).show();
@@ -212,6 +212,8 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             // insert into database
             if (food_adapter.getItemCount() > 0 && !"".equals(name.getText().toString())) {
                 createMeal();
+            } else {
+                Snackbar.make(outerWrapper, getString(R.string.add_meal_missing), Snackbar.LENGTH_LONG).show();
             }
 
             return true;

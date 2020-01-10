@@ -1,13 +1,12 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Meal implements NutritionUnit {
@@ -20,6 +19,19 @@ public class Meal implements NutritionUnit {
 
     public Meal() {
 
+    }
+
+    /**
+     * Constructor
+     *
+     * @param name name
+     */
+    @Ignore
+    public Meal(String name, FoodPortion... foods) {
+        this.name = name;
+        for (FoodPortion food : foods) {
+            this.foods.add(food);
+        }
     }
 
     /**
@@ -46,6 +58,10 @@ public class Meal implements NutritionUnit {
         this.foods.add(food);
     }
 
+    public List<FoodPortion> getFoods() {
+        return foods;
+    }
+
     @Override
     public int getId() {
         return id;
@@ -58,6 +74,10 @@ public class Meal implements NutritionUnit {
     @Override
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

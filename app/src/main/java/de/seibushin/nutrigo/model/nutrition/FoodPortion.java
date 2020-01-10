@@ -1,6 +1,5 @@
 package de.seibushin.nutrigo.model.nutrition;
 
-import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 
 public class FoodPortion implements NutritionUnit {
