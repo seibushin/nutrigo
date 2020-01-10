@@ -2,12 +2,11 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.app.Application;
 
-import androidx.lifecycle.LiveData;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
@@ -40,7 +39,6 @@ class Repo {
     private LiveData<List<Long>> daysMeal;
 
     private MealFoodDao mealFoodDao;
-
 
 
     Repo(Application application) {
@@ -98,7 +96,7 @@ class Repo {
         df.fdID = food.fdID;
 
         AppDatabase.writeExecutor.submit(() -> {
-           dayFoodDao.insert(df);
+            dayFoodDao.insert(df);
         });
 
         return food;
@@ -155,7 +153,7 @@ class Repo {
     }
 
     void updateProfile(Profile profile) {
-        AppDatabase.writeExecutor.execute(()-> profileDao.update(profile));
+        AppDatabase.writeExecutor.execute(() -> profileDao.update(profile));
     }
 
     /*
@@ -204,7 +202,7 @@ class Repo {
         return meal;
     }
 
-    MealDay insertDayFood(Meal meal) {
+    MealDay insertDayMeal(Meal meal) {
         DayMeal df = new DayMeal();
         df.date = Nutrigo.selectedDay;
         df.mid = meal.getId();

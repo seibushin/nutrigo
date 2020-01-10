@@ -4,7 +4,6 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-
 import de.seibushin.nutrigo.model.Profile;
 
 public class ProfileViewModel extends AndroidViewModel {

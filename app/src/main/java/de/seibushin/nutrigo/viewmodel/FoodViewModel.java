@@ -2,11 +2,10 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.app.Application;
 
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 
@@ -15,7 +14,7 @@ public class FoodViewModel extends AndroidViewModel {
 
     private LiveData<List<FoodPortion>> allFood;
 
-    public FoodViewModel (Application application) {
+    public FoodViewModel(Application application) {
         super(application);
         repo = new Repo(application);
         allFood = repo.getAllFood();

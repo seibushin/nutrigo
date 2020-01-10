@@ -1,9 +1,9 @@
 package de.seibushin.nutrigo.viewmodel;
 
-import androidx.room.TypeConverter;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import androidx.room.TypeConverter;
 
 public class DateConverter {
     @TypeConverter

@@ -2,11 +2,10 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.app.Application;
 
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 

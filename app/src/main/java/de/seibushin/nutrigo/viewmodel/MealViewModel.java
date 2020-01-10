@@ -6,8 +6,6 @@ import java.util.List;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import de.seibushin.nutrigo.model.nutrition.Food;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 
 public class MealViewModel extends AndroidViewModel {

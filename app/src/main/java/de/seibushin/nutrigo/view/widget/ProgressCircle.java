@@ -93,8 +93,8 @@ public class ProgressCircle extends RelativeLayout {
             height = heightSize;
         }
 
-        size  = Math.min(width, height);
-        super.onMeasure(MeasureSpec.makeMeasureSpec(size,MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size,MeasureSpec.EXACTLY));
+        size = Math.min(width, height);
+        super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
 
         setMeasuredDimension(size, size);
     }

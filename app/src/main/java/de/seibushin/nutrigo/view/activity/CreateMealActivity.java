@@ -1,7 +1,6 @@
 package de.seibushin.nutrigo.view.activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -20,17 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
-
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.nutrition.Food;
-import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;

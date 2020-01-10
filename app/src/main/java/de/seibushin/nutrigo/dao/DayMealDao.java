@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
 
 @Dao

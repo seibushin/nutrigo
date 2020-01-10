@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.textfield.TextInputEditText;
-
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.viewmodel.ProfileViewModel;

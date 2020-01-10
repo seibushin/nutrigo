@@ -8,13 +8,12 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SortedList;
-import androidx.recyclerview.widget.SortedListAdapterCallback;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
+import androidx.recyclerview.widget.SortedListAdapterCallback;
 import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.FoodPortion;

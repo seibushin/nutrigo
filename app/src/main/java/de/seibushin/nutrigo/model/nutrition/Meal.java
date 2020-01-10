@@ -14,8 +14,9 @@ public class Meal implements NutritionUnit {
     @NonNull
     private int id;
     private String name;
+    //    @Relation(parentColumn = "id", entityColumn = "id", entity = Food.class, associateBy = @Junction(value = MealFood.class, parentColumn = "mealId", entityColumn = "foodId"))
     @Ignore
-    private final List<FoodPortion> foods = new ArrayList<>();
+    private List<FoodPortion> foods = new ArrayList<>();
 
     public Meal() {
 
@@ -60,6 +61,11 @@ public class Meal implements NutritionUnit {
 
     public List<FoodPortion> getFoods() {
         return foods;
+    }
+
+    @Ignore
+    public void setFoods(List<FoodPortion> foods) {
+        this.foods = foods;
     }
 
     @Override

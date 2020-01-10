@@ -2,6 +2,9 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.content.Context;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.DatabaseConfiguration;
@@ -10,10 +13,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.DayMeal;
@@ -30,10 +29,15 @@ import de.seibushin.nutrigo.model.nutrition.Meal;
 @Database(entities = {Food.class, DayFood.class, Profile.class, Meal.class, DayMeal.class, MealFood.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FoodDao foodDao();
+
     public abstract DayFoodDao dayFoodDao();
+
     public abstract ProfileDao profileDao();
+
     public abstract MealDao mealDao();
+
     public abstract DayMealDao dayMealDao();
+
     public abstract MealFoodDao mealFoodDao();
 
     private static volatile AppDatabase INSTANCE;

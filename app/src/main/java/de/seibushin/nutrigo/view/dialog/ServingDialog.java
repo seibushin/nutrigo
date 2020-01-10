@@ -9,15 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.textfield.TextInputEditText;
-
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 
 import static android.app.Activity.RESULT_OK;
 

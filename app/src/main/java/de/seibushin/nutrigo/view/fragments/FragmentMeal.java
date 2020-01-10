@@ -8,25 +8,35 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Meal;
+import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CreateMealActivity;
 import de.seibushin.nutrigo.view.adapter.ClickListener;
 import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
+import de.seibushin.nutrigo.viewmodel.DayMealViewModel;
+import de.seibushin.nutrigo.viewmodel.MealViewModel;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
  */
 public class FragmentMeal extends FragmentList {
+    private MealViewModel mealViewModel;
+    private DayMealViewModel dayMealViewModel;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -62,16 +72,31 @@ public class FragmentMeal extends FragmentList {
                 public void onClick(View view, int position) {
                     Meal meal = (Meal) adapter.getItem(position);
 
-                    // add food to the day
+                    MealDay md = dayMealViewModel.insert(meal);
+
+                    Snackbar.make(view, getString(R.string.undo_food_added_day, meal.getName()), Snackbar.LENGTH_LONG)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                                // remove food from day
+                                dayMealViewModel.delete(md);
+                            }))
+                            .show();
                 }
 
                 @Override
                 public void onLongClick(View view, int position) {
+                    Meal meal = (Meal) adapter.getItem(position);
+                    mealViewModel.delete(meal);
 
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> mealViewModel.insert(meal)))
+                            .show();
                 }
             }));
 
+            mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
+            mealViewModel.getAllMeal().observe(getViewLifecycleOwner(), meals -> adapter.setItems(new ArrayList<>(meals)));
 
+            dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         }
         return view;
     }
@@ -88,24 +113,6 @@ public class FragmentMeal extends FragmentList {
             adapter.notifyDataSetChanged();
         });
     }
-
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

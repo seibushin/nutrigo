@@ -4,11 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 
-@Entity
+@Entity(indices = {@Index("mealId"), @Index("foodId")})
 public class MealFood {
     @PrimaryKey(autoGenerate = true)
     @NonNull
