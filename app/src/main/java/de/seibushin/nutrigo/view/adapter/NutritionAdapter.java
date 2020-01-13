@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.SortedListAdapterCallback;
 import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
-import de.seibushin.nutrigo.model.nutrition.MealPortion;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
@@ -108,7 +106,9 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
     }
 
     public void add(NutritionUnit food) {
-        data.add(food);
+        if (!data.contains(food)) {
+            data.add(food);
+        }
         dataFiltered.add(food);
     }
 
@@ -175,13 +175,6 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             carbs.setText(Helper.formatDecimal(item.getCarbs()));
             sugar.setText(Helper.formatDecimal(item.getSugar()));
             protein.setText(Helper.formatDecimal(item.getProtein()));
-
-            // only add the calculation weight (100g) for not portionized nutrition
-            if (item.getClass().equals(FoodPortion.class) || item.getClass().equals(MealPortion.class)) {
-                weight.setText("");
-            } else {
-                weight.setText(weight.getContext().getString(R.string.weight_unit, item.getWeight()));
-            }
 
             if (item.getType() == NutritionType.FOOD) {
                 ic_nutri.setImageResource(R.drawable.ic_food);

@@ -19,14 +19,13 @@ import de.seibushin.nutrigo.dao.DayMeal;
 import de.seibushin.nutrigo.dao.DayMealDao;
 import de.seibushin.nutrigo.dao.FoodDao;
 import de.seibushin.nutrigo.dao.MealDao;
-import de.seibushin.nutrigo.dao.MealFood;
-import de.seibushin.nutrigo.dao.MealFoodDao;
+import de.seibushin.nutrigo.dao.MealXFood;
 import de.seibushin.nutrigo.dao.ProfileDao;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
-import de.seibushin.nutrigo.model.nutrition.Meal;
+import de.seibushin.nutrigo.model.nutrition.MealInfo;
 
-@Database(entities = {Food.class, DayFood.class, Profile.class, Meal.class, DayMeal.class, MealFood.class}, version = 1, exportSchema = false)
+@Database(entities = {Food.class, DayFood.class, Profile.class, MealInfo.class, DayMeal.class, MealXFood.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FoodDao foodDao();
 
@@ -37,8 +36,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract MealDao mealDao();
 
     public abstract DayMealDao dayMealDao();
-
-    public abstract MealFoodDao mealFoodDao();
 
     private static volatile AppDatabase INSTANCE;
     private static final int THREADS = 4;
@@ -66,7 +63,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
             writeExecutor.execute(() -> {
                 FoodDao foodDao = INSTANCE.foodDao();
-                Food food = new Food("Avocado", 138, 1.4, 12.5, 3.6, 0.4, 100, 100);
+                Food food = new Food("Avocado", 138, 1.4, 12.5, 3.6, 0.4, 100, 150);
+                food.portionize = false;
+                food.served = food.getPortion();
                 foodDao.insert(food);
 
                 ProfileDao profileDao = INSTANCE.profileDao();

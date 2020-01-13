@@ -2,88 +2,45 @@ package de.seibushin.nutrigo.model.nutrition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
+import androidx.room.Embedded;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
+import androidx.room.Junction;
+import androidx.room.Relation;
+import de.seibushin.nutrigo.dao.MealXFood;
 
-@Entity
 public class Meal implements NutritionUnit {
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
-    private int id;
-    private String name;
-    //    @Relation(parentColumn = "id", entityColumn = "id", entity = Food.class, associateBy = @Junction(value = MealFood.class, parentColumn = "mealId", entityColumn = "foodId"))
-    @Ignore
-    private List<FoodPortion> foods = new ArrayList<>();
+    @Embedded
+    public MealInfo mealInfo = new MealInfo();
+    @Relation(parentColumn = "id",
+            entity = Food.class,
+            entityColumn = "id",
+            associateBy = @Junction(
+                    value = MealXFood.class,
+                    parentColumn = "mealId",
+                    entityColumn = "foodId")
+    )
+    public List<Food> foods = new ArrayList<>();
 
+    @Ignore
     public Meal() {
 
     }
 
-    /**
-     * Constructor
-     *
-     * @param name name
-     */
-    @Ignore
-    public Meal(String name, FoodPortion... foods) {
-        this.name = name;
-        for (FoodPortion food : foods) {
-            this.foods.add(food);
-        }
-    }
-
-    /**
-     * Constructor
-     *
-     * @param id   id
-     * @param name name
-     */
-    @Ignore
-    public Meal(int id, String name, FoodPortion... foods) {
-        this.id = id;
-        this.name = name;
-        for (FoodPortion food : foods) {
-            this.foods.add(food);
-        }
-    }
-
-    /**
-     * Add food to the meal
-     *
-     * @param food food
-     */
-    public void addFood(FoodPortion food) {
-        this.foods.add(food);
-    }
-
-    public List<FoodPortion> getFoods() {
-        return foods;
-    }
-
-    @Ignore
-    public void setFoods(List<FoodPortion> foods) {
+    public Meal(MealInfo mealInfo, List<Food> foods) {
+        this.mealInfo = mealInfo;
         this.foods = foods;
     }
 
     @Override
     public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        return mealInfo.id;
     }
 
     @Override
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return mealInfo.name;
     }
 
     @Override
@@ -93,36 +50,44 @@ public class Meal implements NutritionUnit {
 
     @Override
     public double getKcal() {
-        return foods.stream().mapToDouble(FoodPortion::getKcal).sum();
+        return foods.stream().mapToDouble(Food::getKcal).sum();
     }
 
     @Override
     public double getFat() {
-        return foods.stream().mapToDouble(FoodPortion::getFat).sum();
+        return foods.stream().mapToDouble(Food::getFat).sum();
     }
 
     @Override
     public double getCarbs() {
-        return foods.stream().mapToDouble(FoodPortion::getCarbs).sum();
+        return foods.stream().mapToDouble(Food::getCarbs).sum();
     }
 
     @Override
     public double getSugar() {
-        return foods.stream().mapToDouble(FoodPortion::getSugar).sum();
+        return foods.stream().mapToDouble(Food::getSugar).sum();
     }
 
     @Override
     public double getProtein() {
-        return foods.stream().mapToDouble(FoodPortion::getProtein).sum();
+        return foods.stream().mapToDouble(Food::getProtein).sum();
     }
 
     @Override
     public double getWeight() {
-        return foods.stream().mapToDouble(FoodPortion::getPortion).sum();
+        return foods.stream().mapToDouble(Food::getPortion).sum();
     }
 
     @Override
     public double getPortion() {
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        return "Meal{" +
+                "mealInfo=" + mealInfo +
+                ", foods=" + foods.stream().map(food -> food.getName() +" " + food.served).collect(Collectors.joining()) +
+                '}';
     }
 }

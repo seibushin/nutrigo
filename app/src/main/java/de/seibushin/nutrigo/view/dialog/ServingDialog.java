@@ -41,14 +41,20 @@ public class ServingDialog extends DialogFragment {
                 .setView(view)
                 .setPositiveButton("Save", (dialog1, which) -> {
                     Intent reply = new Intent();
-                    reply.putExtra(EXTRA_SERVING, Double.parseDouble(serving.getText().toString()));
+                    double servingSize = 0;
+                    try {
+                        servingSize = Double.parseDouble(serving.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    reply.putExtra(EXTRA_SERVING, servingSize);
 
                     try {
                         getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, reply);
                     } catch (NullPointerException e) {
-                        resultListener.result(Double.parseDouble(serving.getText().toString()));
+                        resultListener.result(servingSize);
                     }
-
                 })
                 .create();
 

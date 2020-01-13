@@ -2,23 +2,13 @@ package de.seibushin.nutrigo.model.nutrition;
 
 import androidx.room.Embedded;
 
-public class FoodPortion implements NutritionUnit {
+public class MealFood implements NutritionUnit {
     @Embedded
-    private Food food;
-    private double serving;
+    public Food food;
+    public double serving;
 
-    public FoodPortion(Food food, double serving) {
-        this.food = food;
-        this.serving = serving;
-    }
+    public MealFood() {
 
-    public FoodPortion(int id, String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion, double serving) {
-        this.food = new Food(id, name, kcal, fat, carbs, sugar, protein, weight, portion);
-        this.serving = serving;
-    }
-
-    public Food getFood() {
-        return food;
     }
 
     @Override
@@ -71,10 +61,6 @@ public class FoodPortion implements NutritionUnit {
         return serving;
     }
 
-    public void setPortion(double portion) {
-        this.serving = portion;
-    }
-
     /**
      * Portionize the value according to the portion and the foods values
      *
@@ -83,13 +69,5 @@ public class FoodPortion implements NutritionUnit {
      */
     private double portionize(double v) {
         return v * serving / food.getWeight();
-    }
-
-    @Override
-    public String toString() {
-        return "FoodPortion{" +
-                "food=" + food +
-                ", serving=" + serving +
-                '}';
     }
 }

@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 public class Food implements NutritionUnit {
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    private int id;
+    public int id;
     private String name;
     private double kcal;
     private double fat;
@@ -18,6 +18,11 @@ public class Food implements NutritionUnit {
     private double protein;
     private double weight;
     private double portion;
+
+    @Ignore
+    public double served;
+    @Ignore
+    public boolean portionize = false;
 
     public Food() {
 
@@ -84,7 +89,7 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getKcal() {
-        return kcal;
+        return portioning(kcal);
     }
 
     public void setKcal(double kcal) {
@@ -93,7 +98,7 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getFat() {
-        return fat;
+        return portioning(fat);
     }
 
     public void setFat(double fat) {
@@ -102,7 +107,7 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getCarbs() {
-        return carbs;
+        return portioning(carbs);
     }
 
     public void setCarbs(double carbs) {
@@ -111,7 +116,7 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getSugar() {
-        return sugar;
+        return portioning(sugar);
     }
 
     public void setSugar(double sugar) {
@@ -120,7 +125,7 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getProtein() {
-        return protein;
+        return portioning(protein);
     }
 
     public void setProtein(double protein) {
@@ -138,12 +143,32 @@ public class Food implements NutritionUnit {
 
     @Override
     public double getPortion() {
+        if (portionize) {
+            return served;
+        }
         return portion;
     }
 
     public void setPortion(double portion) {
         this.portion = portion;
     }
+
+    public double getServed() {
+        if (served > 0) {
+            return served;
+        }
+
+        return portion;
+    }
+
+    private double portioning(double v) {
+        if (portionize) {
+            return v * served / weight;
+        }
+        return v;
+    }
+
+
 
     @Override
     public String toString() {
@@ -157,6 +182,8 @@ public class Food implements NutritionUnit {
                 ", protein=" + protein +
                 ", weight=" + weight +
                 ", portion=" + portion +
+                ", served=" + served +
+                ", portionize=" + portionize +
                 '}';
     }
 

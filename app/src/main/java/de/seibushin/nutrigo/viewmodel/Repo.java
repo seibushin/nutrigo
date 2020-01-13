@@ -5,6 +5,7 @@ import android.app.Application;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.Nutrigo;
@@ -14,20 +15,18 @@ import de.seibushin.nutrigo.dao.DayMeal;
 import de.seibushin.nutrigo.dao.DayMealDao;
 import de.seibushin.nutrigo.dao.FoodDao;
 import de.seibushin.nutrigo.dao.MealDao;
-import de.seibushin.nutrigo.dao.MealFood;
-import de.seibushin.nutrigo.dao.MealFoodDao;
+import de.seibushin.nutrigo.dao.MealXFood;
 import de.seibushin.nutrigo.dao.ProfileDao;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
 
 class Repo {
     private FoodDao foodDao;
     private DayFoodDao dayFoodDao;
-    private LiveData<List<FoodPortion>> allFood;
+    private LiveData<List<Food>> allFood;
     private LiveData<List<FoodDay>> dayFood;
     private ProfileDao profileDao;
     private LiveData<Profile> profile;
@@ -35,10 +34,9 @@ class Repo {
     private MealDao mealDao;
     private DayMealDao dayMealDao;
     private LiveData<List<Meal>> allMeal;
+    private LiveData<List<MealXFood>> allServings;
     private LiveData<List<MealDay>> dayMeal;
     private LiveData<List<Long>> daysMeal;
-
-    private MealFoodDao mealFoodDao;
 
 
     Repo(Application application) {
@@ -55,19 +53,18 @@ class Repo {
 
         mealDao = db.mealDao();
         allMeal = mealDao.getAll();
+        allServings = mealDao.getServings();
 
         dayMealDao = db.dayMealDao();
-        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
+//        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
         daysMeal = dayMealDao.getDays();
-
-        mealFoodDao = db.mealFoodDao();
     }
 
     /*
      * Food Section
      */
 
-    LiveData<List<FoodPortion>> getAllFood() {
+    LiveData<List<Food>> getAllFood() {
         return allFood;
     }
 
@@ -164,19 +161,39 @@ class Repo {
         return allMeal;
     }
 
+    LiveData<List<MealXFood>> getServings() {
+        return allServings;
+    }
+
+    double getMealXFoodServing(int mealId, int foodId) {
+        AtomicReference<Double> serving = new AtomicReference<>((double) 0);
+        try {
+            AppDatabase.writeExecutor.submit(() -> {
+                serving.set(mealDao.getMealXFoodServing(mealId, foodId));
+            }).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return serving.get();
+    }
+
     void insertMeal(Meal meal) {
         AppDatabase.writeExecutor.execute(() -> {
-            int mealId = (int) mealDao.insert(meal);
-            meal.getFoods().forEach(food -> {
-                MealFood mf = new MealFood(mealId, food.getId(), food.getPortion());
-                System.out.println("MEALFOOD " + mf);
-                mealFoodDao.insert(mf);
+            int mealId = (int) mealDao.insert(meal.mealInfo);
+            meal.foods.forEach(food -> {
+                MealXFood mf = new MealXFood(mealId, food.getId(), food.getServed());
+                mealDao.insert(mf);
             });
         });
     }
 
     void deleteMeal(Meal meal) {
-        AppDatabase.writeExecutor.execute(() -> mealDao.delete(meal));
+        AppDatabase.writeExecutor.execute(() -> {
+            mealDao.delete(meal.getId());
+            mealDao.delete(meal.mealInfo);
+        });
     }
 
     /*

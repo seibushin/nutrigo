@@ -9,12 +9,11 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 import de.seibushin.nutrigo.model.nutrition.Food;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
 
 @Dao
 public interface FoodDao {
-    @Query("SELECT *, food.portion as serving FROM food")
-    LiveData<List<FoodPortion>> getAll();
+    @Query("SELECT * FROM food")
+    LiveData<List<Food>> getAll();
 
     @Insert
     void insertAll(Food... foods);

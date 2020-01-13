@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.R;
-import de.seibushin.nutrigo.model.nutrition.FoodPortion;
+import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
@@ -50,7 +50,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
 
     private FoodViewModel foodViewModel;
     private final ServingDialog servingDialog = new ServingDialog();
-    private FoodPortion currentFood;
+    private Food currentFood;
     private int currentPosition;
 
     private MealViewModel mealViewModel;
@@ -122,7 +122,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             public void onClick(View view, int position) {
                 NutritionUnit nu = food_adapter.getItem(position);
                 if (nu.getType() == NutritionType.FOOD) {
-                    currentFood = (FoodPortion) nu;
+                    currentFood = (Food) nu;
                     currentPosition = position;
                 }
 
@@ -147,7 +147,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         rv_search.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_search, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                FoodPortion food = (FoodPortion) search_adapter.getItem(position);
+                Food food = (Food) search_adapter.getItem(position);
 
                 // add searched food to actual meal food
                 food_adapter.add(food);
@@ -160,7 +160,13 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         }));
 
         foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
-        foodViewModel.getAllFood().observe(this, foods -> search_adapter.setItems(new ArrayList<>(foods)));
+        foodViewModel.getAllFood().observe(this, foods -> {
+            for (Food food : foods) {
+                food.served = food.getPortion();
+                food.portionize = true;
+            }
+            search_adapter.setItems(new ArrayList<>(foods));
+        });
 
         mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
     }
@@ -175,9 +181,10 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         try {
             String _name = name.getText().toString().trim();
             String _tag = tag.getText().toString().trim();
-            Meal meal = new Meal(_name);
+            Meal meal = new Meal();
+            meal.mealInfo.name = _name;
             // add all selected food portions
-            food_adapter.getData().forEach(food -> meal.addFood((FoodPortion) food));
+            food_adapter.getData().forEach(food -> meal.foods.add((Food) food));
 
             mealViewModel.insert(meal);
             Snackbar.make(outerWrapper, getString(R.string.add_meal_insert, meal.getName()), Snackbar.LENGTH_LONG).show();
@@ -241,8 +248,8 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
 
     @Override
     public void result(Double serving) {
-        if (currentFood != null && currentPosition != -1) {
-            currentFood.setPortion(serving);
+        if (currentFood != null && currentPosition != -1 && serving > 0) {
+            currentFood.served = serving;
             food_adapter.notifyItemChanged(currentPosition);
             currentPosition = -1;
             currentFood = null;

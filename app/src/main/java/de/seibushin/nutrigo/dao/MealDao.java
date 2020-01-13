@@ -9,30 +9,35 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
-import de.seibushin.nutrigo.model.nutrition.MealX;
+import de.seibushin.nutrigo.model.nutrition.MealInfo;
 
 @Dao
 public interface MealDao {
-    @Query("SELECT * FROM meal")
+    @Transaction
+    @Query("SELECT * FROM mealinfo")
     LiveData<List<Meal>> getAll();
 
-    @Transaction
-    @Query("SELECT meal.*, food.*, mealFood.serving FROM meal" +
-            " INNER JOIN mealFood on meal.id = mealfood.mealId" +
-            " INNER JOIN food on food.id = mealFood.foodId")
-    LiveData<List<MealX>> getAll2();
+    @Query("SELECT * FROM mealxfood")
+    LiveData<List<MealXFood>> getServings();
+
+    @Query("SELECT serving FROM mealxfood WHERE mealId = :mealId AND foodId = :foodId")
+    double getMealXFoodServing(int mealId, int foodId);
 
     @Insert
-    void insertAll(Meal... meals);
+    long insert(MealInfo meal);
 
     @Insert
-    long insert(Meal meal);
+    long insert(MealXFood mealXFood);
 
     @Delete
-    void delete(Meal meal);
+    void delete(MealInfo meal);
+
+    @Query("DELETE FROM mealxfood WHERE mealId = :mealId")
+    void delete(int mealId);
 
     @Update
-    void update(Meal meal);
+    void update(MealInfo meal);
 
 }

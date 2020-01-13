@@ -85,6 +85,7 @@ public class FragmentMeal extends FragmentList {
                 @Override
                 public void onLongClick(View view, int position) {
                     Meal meal = (Meal) adapter.getItem(position);
+                    System.out.println("MEAL " + meal);
                     mealViewModel.delete(meal);
 
                     Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
@@ -94,7 +95,12 @@ public class FragmentMeal extends FragmentList {
             }));
 
             mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
-            mealViewModel.getAllMeal().observe(getViewLifecycleOwner(), meals -> adapter.setItems(new ArrayList<>(meals)));
+            mealViewModel.getAllMeal().observe(getViewLifecycleOwner(), meals -> {
+                adapter.setItems(mealViewModel.getServedMeals());
+            });
+//            mealViewModel.getServing().observe(getViewLifecycleOwner(), servedMeals -> {
+//                adapter.setItems(mealViewModel.getServedMeals());
+//            });
 
             dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         }
