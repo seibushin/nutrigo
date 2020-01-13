@@ -1,5 +1,7 @@
 package de.seibushin.nutrigo.model.nutrition;
 
+import java.util.Objects;
+
 import androidx.room.Embedded;
 
 public class FoodDay implements NutritionUnit {
@@ -72,5 +74,21 @@ public class FoodDay implements NutritionUnit {
      */
     private double portionize(double v) {
         return v * serving / food.getWeight();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodDay foodDay = (FoodDay) o;
+        return Double.compare(foodDay.serving, serving) == 0 &&
+                fdID == foodDay.fdID &&
+                date == foodDay.date &&
+                timestamp == foodDay.timestamp;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(food, serving, fdID, date, timestamp);
     }
 }

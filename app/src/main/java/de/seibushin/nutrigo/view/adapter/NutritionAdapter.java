@@ -108,8 +108,19 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
     public void add(NutritionUnit food) {
         if (!data.contains(food)) {
             data.add(food);
+            dataFiltered.add(food);
         }
-        dataFiltered.add(food);
+    }
+
+    public void addItems(List<NutritionUnit> nus) {
+        data.forEach(nu -> System.out.println(nu.getName() + " " + nu.getId() + " " + nu.getPortion()));
+        nus.forEach(nu -> {
+            System.out.println("ADD ?" + !data.contains(nu) + " " + nu.getName() + " " + nu.getId() + " " + nu.getPortion());
+            if (!data.contains(nu)) {
+                data.add(nu);
+                dataFiltered.add(nu);
+            }
+        });
     }
 
     public void remove(NutritionUnit food) {

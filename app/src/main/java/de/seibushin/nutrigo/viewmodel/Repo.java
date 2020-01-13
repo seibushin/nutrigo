@@ -56,7 +56,7 @@ class Repo {
         allServings = mealDao.getServings();
 
         dayMealDao = db.dayMealDao();
-//        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
+        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
         daysMeal = dayMealDao.getDays();
     }
 
@@ -254,7 +254,7 @@ class Repo {
     }
 
     void deleteDayMeal(MealDay meal) {
-        AppDatabase.writeExecutor.execute(() -> dayFoodDao.delete(meal.mdID));
+        AppDatabase.writeExecutor.execute(() -> dayMealDao.delete(meal.mdID));
     }
 
     void updateDayFood(MealDay meal, double serving) {

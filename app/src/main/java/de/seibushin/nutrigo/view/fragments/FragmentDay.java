@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
+import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CalendarActivity;
@@ -37,6 +39,7 @@ import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
 import de.seibushin.nutrigo.view.widget.ProgressCircle;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
+import de.seibushin.nutrigo.viewmodel.DayMealViewModel;
 import de.seibushin.nutrigo.viewmodel.ProfileViewModel;
 
 import static android.app.Activity.RESULT_OK;
@@ -47,6 +50,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class FragmentDay extends Fragment {
     private DayFoodViewModel dayFoodViewModel;
+    private DayMealViewModel dayMealViewModel;
     private ProfileViewModel profileViewModel;
 
     public static final int NEW_SERVING = 101;
@@ -137,33 +141,43 @@ public class FragmentDay extends Fragment {
                     Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
                             .show();
+                } else if (nu.getType() == NutritionType.MEAL) {
+                    MealDay meal = (MealDay) nu;
+                    dayMealViewModel.delete(meal);
+
+                    Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayMealViewModel.insertDayMeal(meal)))
+                            .show();
                 }
             }
         }));
 
+        dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
+
+        dayMealViewModel.getDayMeal().observe(getViewLifecycleOwner(), meals -> {
+            // todo: rework
+            // todo: currently we get all meals and need to distinct between old and new ones
+            // alternatively reset the complete list with all foods and meals??
+//            adapter.addItems(dayMealViewModel.getServedMeals());
+            List<NutritionUnit> fandm = dayMealViewModel.getServedMeals();
+            fandm.addAll(new ArrayList<>(dayFoodViewModel.getDayFood().getValue()));
+            adapter.setItems(fandm);
+
+            // calc day
+            calcDay();
+        });
+
         dayFoodViewModel.getDayFood().observe(getViewLifecycleOwner(), foods -> {
-            adapter.setItems(new ArrayList<>(foods));
+            // todo: rework
+            // todo: currently we get all meals and need to distinct between old and new ones
+//            adapter.addItems(new ArrayList<>(foods));
+            List<NutritionUnit> fandm = dayMealViewModel.getServedMeals();
+            fandm.addAll(new ArrayList<>(foods));
+            adapter.setItems(fandm);
 
-            double kcal = 0;
-            double protein = 0;
-            double fat = 0;
-            double carbs = 0;
-            double sugar = 0;
-
-            for (FoodDay food : foods) {
-                kcal += food.getKcal();
-                protein += food.getProtein();
-                fat += food.getFat();
-                carbs += food.getCarbs();
-                sugar += food.getSugar();
-            }
-
-            // update progress
-            pc_kcal.setProgress((int) kcal);
-            pc_carbs.setProgress((int) carbs);
-            pc_fat.setProgress((int) fat);
-            pc_protein.setProgress((int) protein);
+            // calc day
+            calcDay();
         });
 
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
@@ -175,6 +189,28 @@ public class FragmentDay extends Fragment {
         });
 
         return view;
+    }
+
+    private void calcDay() {
+        double kcal = 0;
+        double protein = 0;
+        double fat = 0;
+        double carbs = 0;
+        double sugar = 0;
+
+        for (NutritionUnit nu : adapter.getData()) {
+            kcal += nu.getKcal();
+            protein += nu.getProtein();
+            fat += nu.getFat();
+            carbs += nu.getCarbs();
+            sugar += nu.getSugar();
+        }
+
+        // update progress
+        pc_kcal.setProgress((int) kcal);
+        pc_carbs.setProgress((int) carbs);
+        pc_fat.setProgress((int) fat);
+        pc_protein.setProgress((int) protein);
     }
 
     @Override
