@@ -2,12 +2,14 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.app.Application;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
+import de.seibushin.nutrigo.model.nutrition.MealDay;
 
 public class DayFoodViewModel extends AndroidViewModel {
     private Repo repo;
@@ -23,7 +25,17 @@ public class DayFoodViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<FoodDay>> getDayFood() {
+        dayFood = repo.getDayFood();
         return dayFood;
+    }
+
+    public List<FoodDay> getCurrentDayFood() {
+        List<FoodDay> food = new ArrayList<>();
+        List<FoodDay> current = dayFood.getValue();
+        if (current != null) {
+            food.addAll(current);
+        }
+        return food;
     }
 
     public FoodDay insert(Food food) {

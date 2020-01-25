@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import androidx.room.Embedded;
 
-public class MealDay implements NutritionUnit {
+public class MealDay implements NutritionUnit, NutritionDay {
     @Embedded
     public Meal meal;
     public double serving;
@@ -90,5 +90,10 @@ public class MealDay implements NutritionUnit {
     @Override
     public int hashCode() {
         return Objects.hash(meal, serving, mdID, date, timestamp);
+    }
+
+    @Override
+    public Long getTimestamp() {
+        return timestamp;
     }
 }

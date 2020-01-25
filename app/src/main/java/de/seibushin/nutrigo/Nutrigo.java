@@ -28,4 +28,26 @@ public class Nutrigo {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
     }
+
+    public static void prevDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(selectedDay);
+        toDay(calendar);
+        calendar.add(Calendar.DATE, -1);
+
+        setSelectedDay(calendar.getTimeInMillis());
+    }
+
+    public static void nextDay() {
+        Calendar today = Calendar.getInstance();
+        toDay(today);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(selectedDay);
+        toDay(calendar);
+
+        if (calendar.before(today)) {
+            calendar.add(Calendar.DATE, 1);
+            setSelectedDay(calendar.getTimeInMillis());
+        }
+    }
 }

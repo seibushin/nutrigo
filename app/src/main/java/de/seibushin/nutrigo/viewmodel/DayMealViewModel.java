@@ -25,11 +25,16 @@ public class DayMealViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<MealDay>> getDayMeal() {
+        dayMeal = repo.getDayMeal();
         return dayMeal;
     }
 
     public List<NutritionUnit> getServedMeals() {
-        List<MealDay> meals = new ArrayList<>(dayMeal.getValue());
+        List<MealDay> meals = new ArrayList<>();
+        List<MealDay> current = dayMeal.getValue();
+        if (current != null) {
+            meals.addAll(current);
+        }
 
         meals.forEach(meal -> {
             meal.meal.foods.forEach(food -> {
@@ -54,7 +59,7 @@ public class DayMealViewModel extends AndroidViewModel {
     }
 
     public void update(MealDay meal, double serving) {
-        repo.updateDayFood(meal, serving);
+        repo.updateDayMeal(meal, serving);
     }
 
     public LiveData<List<Long>> getDays() {

@@ -3,8 +3,13 @@ package de.seibushin.nutrigo.view;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,10 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.view.fragments.FragmentDay;
 import de.seibushin.nutrigo.view.fragments.FragmentFood;
 import de.seibushin.nutrigo.view.fragments.FragmentMeal;
+import de.seibushin.nutrigo.view.widget.NoSwipeViewPager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private NoSwipeViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private final DateFormat df = SimpleDateFormat.getDateInstance();
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        setTitle(getString(R.string.title_activity_main) + " -  " + df.format(new Date(Nutrigo.selectedDay)));
+    }
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

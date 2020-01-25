@@ -1,11 +1,17 @@
 package de.seibushin.nutrigo.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,14 +67,30 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView name;
+        ImageView image;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tv_name);
+            image = itemView.findViewById(R.id.food_img);
         }
 
         public void setFoodLink(FoodLink link) {
             name.setText(link.getName());
+            image.setImageResource(R.color.colorAccent);
+
+            if (link.getImg().matches("https://fddb.info.*")) {
+                AsyncTask.execute(() -> {
+                    try {
+                        URL url = new URL(link.getImg());
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                        image.post(() -> image.setImageBitmap(bmp));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
         }
     }
 }

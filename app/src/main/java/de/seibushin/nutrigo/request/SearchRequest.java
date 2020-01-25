@@ -38,14 +38,17 @@ public class SearchRequest extends Request<List<FoodLink>> {
 
             List<FoodLink> links = new ArrayList<>();
             Document doc = Jsoup.parse(html);
-            for (Element element : doc.select("table tr td + td")) {
-                try {
-                    String name = Html.fromHtml(element.select("div").text()).toString();
-                    String link = element.attr("onclick").replaceAll(".*?href='(.*?)';.*", "$1");
+            for (Element element : doc.select("table tr")) {
+                if (element.hasClass("aclista") || element.hasClass("aclistb")) {
+                    try {
+                        String name = Html.fromHtml(element.select("td + td div").text()).toString();
+                        String link = element.select("td + td").attr("onclick").replaceAll(".*?href='(.*?)';.*", "$1");
+                        String img = "https:" + element.select("td img").attr("src").replaceAll("16x16", "48x48");
 
-                    links.add(new FoodLink(name, link));
-                } catch (Exception e) {
-                    // ignore
+                        links.add(new FoodLink(name, link, img));
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
             }
             return Response.success(links, getCacheEntry());

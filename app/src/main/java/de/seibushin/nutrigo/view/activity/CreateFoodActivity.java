@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,6 +27,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.request.FoodLink;
@@ -56,6 +58,23 @@ public class CreateFoodActivity extends AppCompatActivity {
     private Response.Listener<Food> foodListener;
     private RecyclerView rvSuggestion;
     private SuggestionAdapter suggestionAdapter;
+    private TextView checkMacro;
+    private TextWatcher tw = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkMacros();
+        }
+    };
 
     private View.OnClickListener suggestionClickListener;
 
@@ -65,6 +84,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_food);
 
         outerWrapper = findViewById(R.id.outer_wrapper);
+        checkMacro = findViewById(R.id.checkMacro);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,7 +153,38 @@ public class CreateFoodActivity extends AppCompatActivity {
             return false;
         });
 
+        kcal.addTextChangedListener(tw);
+        fat.addTextChangedListener(tw);
+        carbs.addTextChangedListener(tw);
+        protein.addTextChangedListener(tw);
+
         foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
+    }
+
+    private boolean checkMacros() {
+        try {
+            double _kcal = Double.valueOf(kcal.getText().toString());
+            double _protein = Double.valueOf(protein.getText().toString());
+            double _fat = Double.valueOf(fat.getText().toString());
+            double _carbs = Double.valueOf(carbs.getText().toString());
+
+            double kCalced = _protein * 4 + _carbs * 4 + _fat * 9;
+
+            if (kCalced > _kcal*0.95 && kCalced < _kcal*1.05) {
+                checkMacro.setTextColor(getColor(R.color.colorPrimary));
+                checkMacro.setText("All Macros are okay!");
+                return true;
+            } else {
+                checkMacro.setTextColor(getColor(R.color.colorAccent));
+                checkMacro.setText("Kcal should be " + Helper.formatDecimal(kCalced) + "!");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            checkMacro.setTextColor(getColor(R.color.colorAccent));
+            checkMacro.setText("Please fill all fields!");
+            return false;
+        }
     }
 
     private void setupListener() {
@@ -166,20 +217,22 @@ public class CreateFoodActivity extends AppCompatActivity {
      */
     private void createFood() {
         try {
-            String _name = name.getText().toString().trim();
-            double _weight = Double.valueOf(weight.getText().toString());
-            double _portion = Double.valueOf(portion.getText().toString());
-            double _kcal = Double.valueOf(kcal.getText().toString());
-            double _protein = Double.valueOf(protein.getText().toString());
-            double _fat = Double.valueOf(fat.getText().toString());
-            double _carbs = Double.valueOf(carbs.getText().toString());
-            double _sugar = Double.valueOf(sugar.getText().toString());
+            if (checkMacros()) {
+                String _name = name.getText().toString().trim();
+                double _weight = Double.valueOf(weight.getText().toString());
+                double _portion = Double.valueOf(portion.getText().toString());
+                double _kcal = Double.valueOf(kcal.getText().toString());
+                double _protein = Double.valueOf(protein.getText().toString());
+                double _fat = Double.valueOf(fat.getText().toString());
+                double _carbs = Double.valueOf(carbs.getText().toString());
+                double _sugar = Double.valueOf(sugar.getText().toString());
 
-            Food food = new Food(_name, _kcal, _fat, _carbs, _sugar, _protein, _weight, _portion);
-            foodViewModel.insert(food);
+                Food food = new Food(_name, _kcal, _fat, _carbs, _sugar, _protein, _weight, _portion);
+                foodViewModel.insert(food);
 
-            Snackbar.make(outerWrapper, R.string.add_food_insert, Snackbar.LENGTH_LONG).show();
-            resetFood();
+                Snackbar.make(outerWrapper, R.string.add_food_insert, Snackbar.LENGTH_LONG).show();
+                resetFood();
+            }
         } catch (NumberFormatException e) {
             Snackbar.make(outerWrapper, R.string.add_food_insert_error, Snackbar.LENGTH_LONG).show();
         }

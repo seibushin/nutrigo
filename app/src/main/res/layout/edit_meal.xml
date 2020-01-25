@@ -25,8 +25,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-8dp"
-            android:hint="@string/name"
+            android:capitalize="words"
 
+            android:hint="@string/name"
             android:imeOptions="actionNext"
             android:inputType="text"
             android:nextFocusForward="@id/ti_tag"
@@ -73,6 +74,7 @@
             android:id="@+id/ti_tag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:capitalize="words"
             android:gravity="center_horizontal"
             android:hint="Tags"
             android:imeOptions="actionNext"

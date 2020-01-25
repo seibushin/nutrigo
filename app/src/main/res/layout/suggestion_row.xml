@@ -14,6 +14,19 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/food_img"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/food_img"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/food_image_desc"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@color/colorAccent"
+        tools:srcCompat="@tools:sample/backgrounds/scenic[1]" />
 </androidx.constraintlayout.widget.ConstraintLayout>

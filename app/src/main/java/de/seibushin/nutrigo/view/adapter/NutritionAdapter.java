@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.SortedListAdapterCallback;
 import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.NutritionDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
@@ -27,9 +28,14 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
 
     private final List<NutritionUnit> data = new ArrayList<>();
 
+    private boolean isDay = false;
+
     private SortedList<NutritionUnit> dataFiltered = new SortedList(NutritionUnit.class, new SortedListAdapterCallback(this) {
         @Override
         public int compare(Object o1, Object o2) {
+            if (isDay) {
+                return ((NutritionDay) o1).getTimestamp().compareTo(((NutritionDay) o2).getTimestamp());
+            }
             return (((NutritionUnit) o1).getName().toLowerCase()).compareTo(((NutritionUnit) o2).getName().toLowerCase());
         }
 
@@ -54,6 +60,10 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
     public NutritionAdapter() {
     }
 
+    public NutritionAdapter(boolean isDay) {
+        this.isDay = isDay;
+    }
+
     /**
      * Update the items list
      *
@@ -63,6 +73,26 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         this.data.clear();
         this.data.addAll(items);
         this.dataFiltered.replaceAll(items);
+    }
+
+    private List<NutritionUnit> meals = new ArrayList<>();
+    private List<NutritionUnit> foods = new ArrayList<>();
+
+    public synchronized void setFoods(List<NutritionUnit> foods) {
+        this.foods = new ArrayList<>(foods);
+        refreshItems();
+    }
+
+    public synchronized void setMeals(List<NutritionUnit> meals) {
+        this.meals = new ArrayList<>(meals);
+        refreshItems();
+    }
+
+    public synchronized void refreshItems() {
+        this.data.clear();
+        this.data.addAll(foods);
+        this.data.addAll(meals);
+        this.dataFiltered.replaceAll(new ArrayList<>(data));
     }
 
     @Override

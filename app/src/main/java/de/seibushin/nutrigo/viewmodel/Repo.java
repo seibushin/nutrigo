@@ -45,7 +45,6 @@ class Repo {
         allFood = foodDao.getAll();
 
         dayFoodDao = db.dayFoodDao();
-        dayFood = dayFoodDao.getFoods(Nutrigo.selectedDay);
         daysFood = dayFoodDao.getDays();
 
         profileDao = db.profileDao();
@@ -56,7 +55,6 @@ class Repo {
         allServings = mealDao.getServings();
 
         dayMealDao = db.dayMealDao();
-        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
         daysMeal = dayMealDao.getDays();
     }
 
@@ -81,6 +79,7 @@ class Repo {
      */
 
     LiveData<List<FoodDay>> getDayFood() {
+        dayFood = dayFoodDao.getFoods(Nutrigo.selectedDay);
         return dayFood;
     }
 
@@ -199,8 +198,8 @@ class Repo {
     /*
      * Day Meal Section
      */
-
     LiveData<List<MealDay>> getDayMeal() {
+        dayMeal = dayMealDao.getMeals(Nutrigo.selectedDay);
         return dayMeal;
     }
 
@@ -257,8 +256,7 @@ class Repo {
         AppDatabase.writeExecutor.execute(() -> dayMealDao.delete(meal.mdID));
     }
 
-    void updateDayFood(MealDay meal, double serving) {
-        AppDatabase.writeExecutor.execute(() -> dayFoodDao.update(meal.mdID, serving));
+    void updateDayMeal(MealDay meal, double serving) {
+        AppDatabase.writeExecutor.execute(() -> dayMealDao.update(meal.mdID, serving));
     }
-
 }

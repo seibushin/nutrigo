@@ -21,8 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:elevation="0dp"
-            app:title="@string/app_name">
+            android:elevation="0dp">
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -61,12 +60,12 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <de.seibushin.nutrigo.view.widget.NoSwipeViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </androidx.viewpager.widget.ViewPager>
+    </de.seibushin.nutrigo.view.widget.NoSwipeViewPager>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
