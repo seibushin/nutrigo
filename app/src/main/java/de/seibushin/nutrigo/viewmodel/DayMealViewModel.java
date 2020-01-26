@@ -9,7 +9,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
-import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 
 public class DayMealViewModel extends AndroidViewModel {
     private Repo repo;
@@ -29,7 +28,7 @@ public class DayMealViewModel extends AndroidViewModel {
         return dayMeal;
     }
 
-    public List<NutritionUnit> getServedMeals() {
+    public List<MealDay> getServedMeals() {
         List<MealDay> meals = new ArrayList<>();
         List<MealDay> current = dayMeal.getValue();
         if (current != null) {
@@ -60,6 +59,10 @@ public class DayMealViewModel extends AndroidViewModel {
 
     public void update(MealDay meal, double serving) {
         repo.updateDayMeal(meal, serving);
+    }
+
+    public void update(MealDay meal) {
+        repo.updateDayMeal(meal);
     }
 
     public LiveData<List<Long>> getDays() {

@@ -21,7 +21,7 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_height="135dp"
                 android:elevation="0dp"
                 app:layout_collapseMode="pin" />
 
@@ -39,9 +39,12 @@
                     app:label="@string/kcal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </de.seibushin.nutrigo.view.widget.ProgressCircle>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearLayoutCompat"
                     android:layout_width="match_parent"
                     android:layout_height="75dp"
                     android:layout_marginStart="32dp"
@@ -56,7 +59,6 @@
                         android:id="@+id/pc_fat"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="5dp"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         app:label="@string/fat" />
@@ -66,7 +68,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
-                        android:layout_marginTop="5dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         app:label="@string/carbs" />
@@ -76,10 +77,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         app:label="@string/protein" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <de.seibushin.nutrigo.view.widget.TimeLine
+                    android:id="@+id/timeline"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat">
+
+                </de.seibushin.nutrigo.view.widget.TimeLine>
 
                 <ImageButton
                     android:id="@+id/show_profile"

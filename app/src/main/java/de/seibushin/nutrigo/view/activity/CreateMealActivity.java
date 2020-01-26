@@ -126,7 +126,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
                     currentPosition = position;
                 }
 
-                servingDialog.show(getSupportFragmentManager());
+                servingDialog.show(getSupportFragmentManager(), nu);
             }
 
             @Override

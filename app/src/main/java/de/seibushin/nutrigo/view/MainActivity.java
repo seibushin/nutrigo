@@ -3,7 +3,6 @@ package de.seibushin.nutrigo.view;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -83,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private final DateFormat df = SimpleDateFormat.getDateInstance();
+    private final DateFormat df = new SimpleDateFormat("E dd MMM yyyy");
+
     @Override
     public void onResume() {
         super.onResume();

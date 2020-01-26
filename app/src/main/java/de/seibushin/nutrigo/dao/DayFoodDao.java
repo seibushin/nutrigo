@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 
 @Dao
@@ -30,4 +31,7 @@ public interface DayFoodDao {
 
     @Query("UPDATE dayfood SET serving = :serving WHERE dayfood.fdID = :fdID")
     void update(int fdID, double serving);
+
+    @Update
+    void update(DayFood dayFood);
 }

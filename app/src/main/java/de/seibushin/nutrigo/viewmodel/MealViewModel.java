@@ -1,7 +1,6 @@
 package de.seibushin.nutrigo.viewmodel;
 
 import android.app.Application;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

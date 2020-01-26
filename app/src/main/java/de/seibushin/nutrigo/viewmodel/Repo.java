@@ -102,7 +102,7 @@ class Repo {
         DayFood df = new DayFood();
         df.date = Nutrigo.selectedDay;
         df.fid = food.getId();
-        df.timestamp = System.currentTimeMillis();
+        df.timestamp = Nutrigo.getDayAdjustedTimestamp(System.currentTimeMillis());
         df.serving = food.getPortion();
 
         AtomicInteger id = new AtomicInteger();
@@ -138,6 +138,17 @@ class Repo {
 
     void updateDayFood(FoodDay food, double serving) {
         AppDatabase.writeExecutor.execute(() -> dayFoodDao.update(food.fdID, serving));
+    }
+
+    void updateDayFood(FoodDay food) {
+        DayFood dayFood = new DayFood();
+        dayFood.fdID = food.fdID;
+        dayFood.fid = food.getId();
+        dayFood.date = food.date;
+        dayFood.timestamp = food.timestamp;
+        dayFood.serving = food.serving;
+
+        AppDatabase.writeExecutor.execute(() -> dayFoodDao.update(dayFood));
     }
 
     /*
@@ -222,7 +233,7 @@ class Repo {
         DayMeal df = new DayMeal();
         df.date = Nutrigo.selectedDay;
         df.mid = meal.getId();
-        df.timestamp = System.currentTimeMillis();
+        df.timestamp = Nutrigo.getDayAdjustedTimestamp(System.currentTimeMillis());
         df.serving = meal.getPortion();
 
         AtomicInteger id = new AtomicInteger();
@@ -258,5 +269,16 @@ class Repo {
 
     void updateDayMeal(MealDay meal, double serving) {
         AppDatabase.writeExecutor.execute(() -> dayMealDao.update(meal.mdID, serving));
+    }
+
+    void updateDayMeal(MealDay meal) {
+        DayMeal daymeal = new DayMeal();
+        daymeal.mdID = meal.mdID;
+        daymeal.mid = meal.getId();
+        daymeal.date = meal.date;
+        daymeal.timestamp = meal.timestamp;
+        daymeal.serving = meal.serving;
+
+        AppDatabase.writeExecutor.execute(() -> dayMealDao.update(daymeal));
     }
 }

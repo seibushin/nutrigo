@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import androidx.room.Embedded;
 
-public class MealDay implements NutritionUnit, NutritionDay {
+public class MealDay implements NutritionUnit, NutritionDay, EatPoint {
     @Embedded
     public Meal meal;
     public double serving;

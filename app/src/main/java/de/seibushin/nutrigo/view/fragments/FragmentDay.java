@@ -14,8 +14,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.Nullable;
@@ -37,6 +37,7 @@ import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
 import de.seibushin.nutrigo.view.widget.ProgressCircle;
+import de.seibushin.nutrigo.view.widget.TimeLine;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 import de.seibushin.nutrigo.viewmodel.DayMealViewModel;
 import de.seibushin.nutrigo.viewmodel.ProfileViewModel;
@@ -52,9 +53,9 @@ public class FragmentDay extends Fragment {
     private DayMealViewModel dayMealViewModel;
     private ProfileViewModel profileViewModel;
 
-    private final DateFormat df = SimpleDateFormat.getDateInstance();
+    private final DateFormat df = new SimpleDateFormat("E dd MMM yyyy");
 
-    public static final int NEW_SERVING = 101;
+    public static final int NU_DAY_CHANGE = 101;
     private NutritionUnit currentNu;
 
     private RecyclerView recyclerView;
@@ -66,6 +67,7 @@ public class FragmentDay extends Fragment {
     private ProgressCircle pc_protein;
 
     private final ServingDialog servingDialog = new ServingDialog();
+    private TimeLine timeLine;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -84,23 +86,53 @@ public class FragmentDay extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == NEW_SERVING && resultCode == RESULT_OK) {
-            double serving = data.getDoubleExtra(ServingDialog.EXTRA_SERVING, 0);
+        if (requestCode == NU_DAY_CHANGE && resultCode == RESULT_OK) {
             double old_serving = currentNu.getPortion();
+            double serving = data.getDoubleExtra(ServingDialog.EXTRA_SERVING, old_serving);
 
             if (currentNu.getType() == NutritionType.FOOD) {
                 FoodDay currentFood = (FoodDay) currentNu;
-                dayFoodViewModel.update(currentFood, serving);
+                long old_ts = currentFood.timestamp;
+
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(currentFood.timestamp);
+                int hour = data.getIntExtra(ServingDialog.EXTRA_HOUR, c.get(Calendar.HOUR_OF_DAY));
+                int minute = data.getIntExtra(ServingDialog.EXTRA_MINUTE, c.get(Calendar.MINUTE));
+                c.set(Calendar.HOUR_OF_DAY, hour);
+                c.set(Calendar.MINUTE, minute);
+
+                currentFood.serving = serving;
+                currentFood.timestamp = c.getTimeInMillis();
+                dayFoodViewModel.update(currentFood);
 
                 Snackbar.make(getView(), getString(R.string.undo_serving_changed, currentFood.getName()), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.update(currentFood, old_serving)))
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                            currentFood.serving = old_serving;
+                            currentFood.timestamp = old_ts;
+                            dayFoodViewModel.update(currentFood);
+                        }))
                         .show();
             } else if (currentNu.getType() == NutritionType.MEAL) {
                 MealDay currentMeal = (MealDay) currentNu;
-                dayMealViewModel.update(currentMeal, serving);
+                long old_ts = currentMeal.timestamp;
+
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(currentMeal.timestamp);
+                int hour = data.getIntExtra(ServingDialog.EXTRA_HOUR, c.get(Calendar.HOUR_OF_DAY));
+                int minute = data.getIntExtra(ServingDialog.EXTRA_MINUTE, c.get(Calendar.MINUTE));
+                c.set(Calendar.HOUR_OF_DAY, hour);
+                c.set(Calendar.MINUTE, minute);
+
+                currentMeal.serving = serving;
+                currentMeal.timestamp = c.getTimeInMillis();
+                dayMealViewModel.update(currentMeal);
 
                 Snackbar.make(getView(), getString(R.string.undo_serving_changed, currentMeal.getName()), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayMealViewModel.update(currentMeal, old_serving)))
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                            currentMeal.serving = old_serving;
+                            currentMeal.timestamp = old_ts;
+                            dayMealViewModel.update(currentMeal);
+                        }))
                         .show();
             }
 
@@ -116,6 +148,7 @@ public class FragmentDay extends Fragment {
         pc_fat = view.findViewById(R.id.pc_fat);
         pc_carbs = view.findViewById(R.id.pc_carbs);
         pc_protein = view.findViewById(R.id.pc_protein);
+        timeLine = view.findViewById(R.id.timeline);
 
         view.findViewById(R.id.show_profile).setOnClickListener(v -> showProfile());
 
@@ -126,7 +159,7 @@ public class FragmentDay extends Fragment {
         DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
         did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
-        servingDialog.setTargetFragment(this, NEW_SERVING);
+        servingDialog.setTargetFragment(this, NU_DAY_CHANGE);
 
         adapter = new NutritionAdapter(true);
         recyclerView = view.findViewById(R.id.list);
@@ -138,7 +171,7 @@ public class FragmentDay extends Fragment {
             public void onClick(View view, int position) {
                 currentNu = adapter.getItem(position);
 
-                servingDialog.show(getParentFragmentManager());
+                servingDialog.show(getParentFragmentManager(), currentNu);
             }
 
             @Override
@@ -182,8 +215,9 @@ public class FragmentDay extends Fragment {
 
     private void observeMeal() {
         dayMealViewModel.getDayMeal().observe(getViewLifecycleOwner(), meals -> {
-            adapter.setMeals(dayMealViewModel.getServedMeals());
+            adapter.setMeals(new ArrayList<>(dayMealViewModel.getServedMeals()));
             calcDay();
+            timeLine.setMeals(new ArrayList<>(dayMealViewModel.getServedMeals()));
         });
     }
 
@@ -191,10 +225,11 @@ public class FragmentDay extends Fragment {
         dayFoodViewModel.getDayFood().observe(getViewLifecycleOwner(), foods -> {
             adapter.setFoods(new ArrayList<>(foods));
             calcDay();
+            timeLine.setFoods(new ArrayList<>(dayFoodViewModel.getCurrentDayFood()));
         });
     }
 
-    private void calcDay() {
+    private synchronized void calcDay() {
         double kcal = 0;
         double protein = 0;
         double fat = 0;
@@ -230,6 +265,7 @@ public class FragmentDay extends Fragment {
     }
 
     private void prevDay() {
+        adapter.reset();
         Nutrigo.prevDay();
         getActivity().setTitle(getString(R.string.title_activity_main) + " -  " + df.format(new Date(Nutrigo.selectedDay)));
         removeNuObserver();
@@ -239,6 +275,7 @@ public class FragmentDay extends Fragment {
     }
 
     private void nextDay() {
+        adapter.reset();
         Nutrigo.nextDay();
         getActivity().setTitle(getString(R.string.title_activity_main) + " -  " + df.format(new Date(Nutrigo.selectedDay)));
         removeNuObserver();

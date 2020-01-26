@@ -170,6 +170,13 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         return filter;
     }
 
+    public void reset() {
+        meals.clear();
+        foods.clear();
+        data.clear();
+        dataFiltered.clear();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private final View mView;
         private NutritionUnit item;

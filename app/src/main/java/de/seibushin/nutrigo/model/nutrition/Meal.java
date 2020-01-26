@@ -87,7 +87,7 @@ public class Meal implements NutritionUnit {
     public String toString() {
         return "Meal{" +
                 "mealInfo=" + mealInfo +
-                ", foods=" + foods.stream().map(food -> food.getName() +" " + food.served).collect(Collectors.joining()) +
+                ", foods=" + foods.stream().map(food -> food.getName() + " " + food.served).collect(Collectors.joining()) +
                 '}';
     }
 }

@@ -50,4 +50,17 @@ public class Nutrigo {
             setSelectedDay(calendar.getTimeInMillis());
         }
     }
+
+    public static long getDayAdjustedTimestamp(long currentTimeMillis) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(selectedDay);
+
+        Calendar c2 = Calendar.getInstance();
+        c2.setTimeInMillis(currentTimeMillis);
+
+        c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+        c.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+
+        return c.getTimeInMillis();
+    }
 }

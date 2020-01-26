@@ -170,7 +170,7 @@ public class CreateFoodActivity extends AppCompatActivity {
 
             double kCalced = _protein * 4 + _carbs * 4 + _fat * 9;
 
-            if (kCalced > _kcal*0.95 && kCalced < _kcal*1.05) {
+            if (kCalced > _kcal * 0.95 && kCalced < _kcal * 1.05) {
                 checkMacro.setTextColor(getColor(R.color.colorPrimary));
                 checkMacro.setText("All Macros are okay!");
                 return true;
