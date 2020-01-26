@@ -32,6 +32,9 @@ import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.request.FoodLink;
 import de.seibushin.nutrigo.request.FoodSearch;
+import de.seibushin.nutrigo.request.InetFood;
+import de.seibushin.nutrigo.request.Serving;
+import de.seibushin.nutrigo.view.adapter.ServingAdapter;
 import de.seibushin.nutrigo.view.adapter.SuggestionAdapter;
 import de.seibushin.nutrigo.view.widget.TextInputEditTextWithSuggestion;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
@@ -51,11 +54,13 @@ public class CreateFoodActivity extends AppCompatActivity {
     private EditText carbs;
     private EditText sugar;
     private EditText protein;
+    private RecyclerView servings;
+    private ServingAdapter servingAdapter;
 
     private FoodViewModel foodViewModel;
 
     private Response.Listener<List<FoodLink>> searchListener;
-    private Response.Listener<Food> foodListener;
+    private Response.Listener<InetFood> foodListener;
     private RecyclerView rvSuggestion;
     private SuggestionAdapter suggestionAdapter;
     private TextView checkMacro;
@@ -153,6 +158,22 @@ public class CreateFoodActivity extends AppCompatActivity {
             return false;
         });
 
+
+        LinearLayoutManager llm2 = new LinearLayoutManager(this);
+        DividerItemDecoration did2 = new DividerItemDecoration(this, llm2.getOrientation());
+        did2.setDrawable(getDrawable(R.drawable.divider));
+
+        View.OnClickListener servingClickListener = v -> {
+            Serving serv = servingAdapter.getItem(servings.getChildAdapterPosition(v));
+            portion.setText("" + serv.value);
+        };
+
+        servingAdapter = new ServingAdapter(this, servingClickListener);
+        servings = findViewById(R.id.rv_servings);
+        servings.setAdapter(servingAdapter);
+        servings.setLayoutManager(llm2);
+        servings.addItemDecoration(did2);
+
         kcal.addTextChangedListener(tw);
         fat.addTextChangedListener(tw);
         carbs.addTextChangedListener(tw);
@@ -200,7 +221,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         };
     }
 
-    private void updateUI(Food food) {
+    private void updateUI(InetFood food) {
         // add whitespace to the event to guarantee that it is handled as suggestion selection
         name.setText(food.getName() + "  ");
         weight.setText("" + food.getWeight());
@@ -210,6 +231,8 @@ public class CreateFoodActivity extends AppCompatActivity {
         carbs.setText("" + food.getCarbs());
         sugar.setText("" + food.getSugar());
         protein.setText("" + food.getProtein());
+
+        servingAdapter.setData(food.servings);
     }
 
     /**

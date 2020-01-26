@@ -41,7 +41,7 @@ public class FoodSearch {
         }
     }
 
-    public void getFood(String query, Response.Listener<Food> listener) {
+    public void getFood(String query, Response.Listener<InetFood> listener) {
         try {
             queue.cancelAll(FoodRequest.TAG);
             FoodRequest request = new FoodRequest(query, listener);
