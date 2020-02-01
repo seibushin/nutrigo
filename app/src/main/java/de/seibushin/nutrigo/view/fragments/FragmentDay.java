@@ -38,7 +38,7 @@ import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
 import de.seibushin.nutrigo.view.widget.EatProgress;
 import de.seibushin.nutrigo.view.widget.MultiProgressCircle;
-import de.seibushin.nutrigo.view.widget.ProgressCircle;
+import de.seibushin.nutrigo.view.widget.ProgressBar;
 import de.seibushin.nutrigo.view.widget.TimeLine;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 import de.seibushin.nutrigo.viewmodel.DayMealViewModel;
@@ -64,9 +64,9 @@ public class FragmentDay extends Fragment {
     private NutritionAdapter adapter;
 
     private MultiProgressCircle pc_kcal;
-    private ProgressCircle pc_fat;
-    private ProgressCircle pc_carbs;
-    private ProgressCircle pc_protein;
+    private ProgressBar pc_fat;
+    private ProgressBar pc_carbs;
+    private ProgressBar pc_protein;
 
     private final ServingDialog servingDialog = new ServingDialog();
     private TimeLine timeLine;

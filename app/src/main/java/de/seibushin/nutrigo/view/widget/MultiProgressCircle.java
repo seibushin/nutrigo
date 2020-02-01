@@ -19,6 +19,8 @@ public class MultiProgressCircle extends RelativeLayout {
     private String progressStr = "0";
     private String remainingStr = "";
     private double remaining;
+    private String label = "kCal";
+    private String hint = "missing";
 
     private int max = 100;
     private List<EatProgress> progress = new ArrayList<>();
@@ -30,6 +32,7 @@ public class MultiProgressCircle extends RelativeLayout {
     private float sweep = 260;
     private float start = 140;
     private float totalMacro = 0;
+    private boolean showMissing = false;
 
     private Paint paint;
     private RectF rect;
@@ -42,7 +45,7 @@ public class MultiProgressCircle extends RelativeLayout {
         super(context, attrs);
 
         setWillNotDraw(false);
-        color = getResources().getColor(R.color.colorPrimaryDark, null);
+        color = getResources().getColor(R.color.grey, null);
 
         init();
     }
@@ -55,6 +58,11 @@ public class MultiProgressCircle extends RelativeLayout {
         paint.setStrokeWidth(mainStroke);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
+
+        this.setOnClickListener(v -> {
+            showMissing = !showMissing;
+            invalidate();
+        });
     }
 
     @Override
@@ -129,28 +137,36 @@ public class MultiProgressCircle extends RelativeLayout {
                     pp -= max;
                     overdraw++;
                 }
-
             }
         }
 
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.GRAY);
+        paint.setColor(getResources().getColor(R.color.kcal, null));
+        String text = progressStr;
+        if (showMissing) {
+            paint.setColor(Color.GRAY);
+            text = remainingStr;
+        }
         paint.setTextSize(t1size);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        float x = (float) size / 2 - paint.measureText(progressStr) / 2;
-        float y = size / 2;
-        canvas.drawText(progressStr, x, y, paint);
+        float x = (float) size / 2 - paint.measureText(text) / 2;
+        float y = size / 2 + t1size / 2;
+        canvas.drawText(text, x, y, paint);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
 
-        if (remaining < 0) {
+        if (showMissing) {
+            paint.setTextSize(t2size);
             paint.setColor(Color.GRAY);
-        } else {
-            paint.setColor(Color.RED);
+            x = (float) size / 2 - paint.measureText(hint) / 2;
+            float y2 =  y - t1size / 2 - t2size;
+            canvas.drawText(hint, x, y2, paint);
         }
+
         paint.setTextSize(t2size);
-        x = (float) size / 2 - paint.measureText(remainingStr) / 2;
+        paint.setColor(Color.GRAY);
+        x = (float) size / 2 - paint.measureText(label) / 2;
         y += t2size + 5;
-        canvas.drawText(remainingStr, x, y, paint);
+        canvas.drawText(label, x, y, paint);
     }
 
     public void setProgress(EatProgress... progress) {
@@ -159,9 +175,9 @@ public class MultiProgressCircle extends RelativeLayout {
         for (EatProgress eatProgress : progress) {
             this.progress.add(eatProgress);
             if (eatProgress.isTotal) {
-                remaining =  Math.floor(eatProgress.value) - max;
-                progressStr = "" + (int)Math.floor(eatProgress.value);
-                remainingStr = "" + (int)remaining;
+                remaining = max - Math.floor(eatProgress.value);
+                progressStr = "" + (int) Math.floor(eatProgress.value);
+                remainingStr = "" + (int) remaining;
             } else {
                 this.totalMacro += eatProgress.value;
             }

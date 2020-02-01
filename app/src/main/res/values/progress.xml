@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="label" format="string" />
+    <attr name="progress" format="integer" />
+    <attr name="max" format="integer" />
+    <attr name="color" format="color" />
+    <attr name="progressColor" format="color" />
+    <attr name="strokeWidth" format="dimension" />
+
+    <declare-styleable name="ProgressBar">
+        <attr name="label"/>
+        <attr name="color"/>
+        <attr name="progressColor"/>
+    </declare-styleable>
+
+    <declare-styleable name="ProgressCircle">
+        <attr name="label"/>
+        <attr name="progress"/>
+        <attr name="max"/>
+        <attr name="color"/>
+        <attr name="progressColor"/>
+        <attr name="strokeWidth"/>
+    </declare-styleable>
+</resources>
