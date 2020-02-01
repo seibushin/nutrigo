@@ -3,16 +3,21 @@ package de.seibushin.nutrigo.view.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -72,22 +77,23 @@ public class FragmentFood extends FragmentList {
 
                     FoodDay df = dayFoodViewModel.insert(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), Snackbar.LENGTH_LONG)
+                    Snackbar snack = Snackbar.make(getActivity().findViewById(R.id.main_content), getString(R.string.undo_food_added_day, food.getName()), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
                                 // remove food from day
                                 dayFoodViewModel.delete(df);
-                            }))
-                            .show();
+                            }));
+                    showSnackbar(snack);
                 }
 
                 @Override
                 public void onLongClick(View view, int position) {
                     Food food = (Food) adapter.getItem(position);
+                    food.portionize = false;
                     foodViewModel.delete(food);
 
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)))
-                            .show();
+                    Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
+                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)));
+                    showSnackbar(snack);
                 }
             }));
 

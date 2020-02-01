@@ -1,4 +1,4 @@
-package de.seibushin.nutrigo.view;
+package de.seibushin.nutrigo.view.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 // hide keyboard if shown
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm != null && imm.isActive()) {
-//                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 }
             }
 
@@ -123,14 +123,12 @@ public class MainActivity extends AppCompatActivity {
         FragmentMeal meal = new FragmentMeal();
 
         public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
-                    return day;
                 case 1:
                     return food;
                 case 2:

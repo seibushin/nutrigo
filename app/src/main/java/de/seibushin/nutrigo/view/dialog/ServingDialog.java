@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -18,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
@@ -33,6 +36,11 @@ public class ServingDialog extends DialogFragment {
     private TextInputEditText serving;
     private TimePicker timePicker;
     private NutritionUnit nu;
+    private ImageButton addServing;
+    private ImageButton decServing;
+    private TextView servingSize;
+
+    private double addServ = 0;
 
     public interface ResultListener {
         void result(Double serving);
@@ -46,6 +54,11 @@ public class ServingDialog extends DialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_serving, null);
         serving = view.findViewById(R.id.ti_portion);
+        addServing = view.findViewById(R.id.addServing);
+        addServing.setOnClickListener(v -> serving.setText("" + (Double.parseDouble(serving.getText().toString()) + addServ)));
+        decServing = view.findViewById(R.id.decServing);
+        decServing.setOnClickListener(v -> serving.setText("" + (Double.parseDouble(serving.getText().toString()) - addServ)));
+        servingSize = view.findViewById(R.id.servingSize);
         timePicker = view.findViewById(R.id.timepicker);
         timePicker.setIs24HourView(true);
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
@@ -80,6 +93,8 @@ public class ServingDialog extends DialogFragment {
         if (nu.getClass() == FoodDay.class) {
             FoodDay food = (FoodDay) nu;
             serving.setText("" + food.serving);
+            servingSize.setText("" + food.getOgPortion());
+            addServ = food.getOgPortion();
 
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(food.timestamp);
@@ -89,12 +104,20 @@ public class ServingDialog extends DialogFragment {
         } else if (nu.getClass() == MealDay.class) {
             MealDay meal = (MealDay) nu;
             serving.setText("" + meal.serving);
+            servingSize.setText("1.0");
+            addServ = 1.0;
 
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(meal.timestamp);
 
             timePicker.setHour(c.get(Calendar.HOUR_OF_DAY));
             timePicker.setMinute(c.get(Calendar.MINUTE));
+        } else{
+            serving.setText("" + nu.getPortion());
+            servingSize.setText("" + nu.getPortion());
+            addServ = nu.getPortion();
+
+            timePicker.setVisibility(View.GONE);
         }
     }
 

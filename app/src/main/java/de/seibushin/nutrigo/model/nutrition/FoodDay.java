@@ -66,6 +66,10 @@ public class FoodDay implements NutritionUnit, NutritionDay, EatPoint {
         return serving;
     }
 
+    public double getOgPortion() {
+        return food.getPortion();
+    }
+
     /**
      * Portionize the value according to the portion and the foods values
      *

@@ -7,4 +7,10 @@
     <color name="white">#FFFFFF</color>
     <color name="mealPoint">#D81B60</color>
     <color name="foodPoint">#03A9F4</color>
+
+    <color name="kcal">#D81B60</color>
+    <color name="darken">#40000000</color>
+    <color name="fat">#FFC107</color>
+    <color name="protein">#8BC34A</color>
+    <color name="carbs">#03A9F4</color>
 </resources>

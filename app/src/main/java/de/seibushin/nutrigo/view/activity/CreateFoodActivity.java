@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -56,6 +57,7 @@ public class CreateFoodActivity extends AppCompatActivity {
     private EditText protein;
     private RecyclerView servings;
     private ServingAdapter servingAdapter;
+    private CheckBox ignore;
 
     private FoodViewModel foodViewModel;
 
@@ -90,6 +92,7 @@ public class CreateFoodActivity extends AppCompatActivity {
 
         outerWrapper = findViewById(R.id.outer_wrapper);
         checkMacro = findViewById(R.id.checkMacro);
+        ignore = findViewById(R.id.ignore);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -240,7 +243,7 @@ public class CreateFoodActivity extends AppCompatActivity {
      */
     private void createFood() {
         try {
-            if (checkMacros()) {
+            if (checkMacros() || ignore.isChecked()) {
                 String _name = name.getText().toString().trim();
                 double _weight = Double.valueOf(weight.getText().toString());
                 double _portion = Double.valueOf(portion.getText().toString());
@@ -274,6 +277,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         carbs.setText("");
         sugar.setText("");
         protein.setText("");
+        ignore.setChecked(false);
     }
 
     @Override

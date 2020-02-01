@@ -11,8 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".view.activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,17 +24,17 @@
             android:name=".view.activity.CreateFoodActivity"
             android:label="@string/add_food"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
             android:name=".view.activity.CreateMealActivity"
             android:label="@string/add_meal"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
             android:name=".view.activity.CalendarActivity"
             android:label="@string/select_day"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity" />
     </application>
 
 </manifest>

@@ -1,11 +1,18 @@
 package de.seibushin.nutrigo.view.fragments;
 
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.concurrent.Executors;
+
 import androidx.appcompat.widget.SearchView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
@@ -25,6 +32,16 @@ public abstract class FragmentList extends Fragment {
     protected void filter(CharSequence query) {
         this.query = query;
         adapter.getFilter().filter(query);
+    }
+
+    protected void showSnackbar(Snackbar snack) {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) snack.getView().getLayoutParams();
+        params.setAnchorId(R.id.tabs);
+        params.gravity = Gravity.BOTTOM;
+        params.anchorGravity = Gravity.BOTTOM;
+        snack.getView().setLayoutParams(params);
+        snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
+        snack.show();
     }
 
     @Override

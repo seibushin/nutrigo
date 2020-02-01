@@ -36,6 +36,8 @@ import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
+import de.seibushin.nutrigo.view.widget.EatProgress;
+import de.seibushin.nutrigo.view.widget.MultiProgressCircle;
 import de.seibushin.nutrigo.view.widget.ProgressCircle;
 import de.seibushin.nutrigo.view.widget.TimeLine;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
@@ -61,7 +63,7 @@ public class FragmentDay extends Fragment {
     private RecyclerView recyclerView;
     private NutritionAdapter adapter;
 
-    private ProgressCircle pc_kcal;
+    private MultiProgressCircle pc_kcal;
     private ProgressCircle pc_fat;
     private ProgressCircle pc_carbs;
     private ProgressCircle pc_protein;
@@ -244,8 +246,14 @@ public class FragmentDay extends Fragment {
             sugar += nu.getSugar();
         }
 
+        // eatProgress
+        EatProgress eKcal = new EatProgress(kcal, 0, true, R.color.kcal);
+        EatProgress eFat = new EatProgress(fat * 4, 1, false, R.color.fat);
+        EatProgress eCarbs = new EatProgress(carbs * 4, 2, false, R.color.carbs);
+        EatProgress eProtein= new EatProgress(protein * 4, 3, false, R.color.protein);
+
         // update progress
-        pc_kcal.setProgress((int) kcal);
+        pc_kcal.setProgress(eKcal,eFat, eCarbs, eProtein);
         pc_carbs.setProgress((int) carbs);
         pc_fat.setProgress((int) fat);
         pc_protein.setProgress((int) protein);

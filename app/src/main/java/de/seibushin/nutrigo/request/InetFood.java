@@ -16,7 +16,7 @@ public class InetFood  implements NutritionUnit {
     public double portion;
     public List<Serving> servings;
 
-    public InetFood(String name, double kcal, double fat, double protein, double carbs, double sugar, double weight, double portion, List<Serving> servings) {
+    public InetFood(String name, double kcal, double fat, double carbs, double sugar, double protein, double weight, double portion, List<Serving> servings) {
         this.name = name;
         this.kcal = kcal;
         this.fat = fat;
