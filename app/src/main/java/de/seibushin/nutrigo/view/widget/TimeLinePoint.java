@@ -5,11 +5,11 @@ import java.util.Calendar;
 public class TimeLinePoint {
 
     public float size = 20;
-    public float minSize = 10;
-    public float maxSize = 25;
+    public float minSize = 5;
+    public float maxSize = 20;
     public int color;
 
-    public float max = 500;
+    public float max = 300;
     public Float timepoint;
     public Long timestamp;
     public float value;
@@ -36,13 +36,21 @@ public class TimeLinePoint {
         timepoint = (float) hour + ((float) min / 60);
     }
 
+    public float pointsize(float newVal) {
+        return Math.min(Math.max(size * (newVal / max), minSize), maxSize);
+    }
+
     public float pointsize() {
         return Math.min(Math.max(size * (value / max), minSize), maxSize);
     }
 
     public String diff(TimeLinePoint tlp) {
         Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(timestamp - tlp.timestamp);
+
+        // gregorian calendar starts at hour 1 IDK.
+        // therefore we reduce the difference by 1 hour
+        long correction = 60*60*1000;
+        c.setTimeInMillis(timestamp - tlp.timestamp - correction);
 
         return String.format("%d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }

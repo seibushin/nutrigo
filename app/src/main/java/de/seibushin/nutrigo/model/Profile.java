@@ -15,6 +15,11 @@ public class Profile {
     private int sugar = 50;
     private int protein = 200;
 
+    public float weight = 75.0f;
+    public int height = 180;
+    public int age = 20;
+    public boolean male = true;
+
     /**
      * Empty constructor
      */

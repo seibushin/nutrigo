@@ -2,6 +2,7 @@ package de.seibushin.nutrigo.viewmodel;
 
 import android.content.Context;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,6 +12,7 @@ import androidx.room.DatabaseConfiguration;
 import androidx.room.InvalidationTracker;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import de.seibushin.nutrigo.dao.DayFood;
@@ -25,7 +27,7 @@ import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.MealInfo;
 
-@Database(entities = {Food.class, DayFood.class, Profile.class, MealInfo.class, DayMeal.class, MealXFood.class}, version = 1, exportSchema = false)
+@Database(entities = {Food.class, DayFood.class, Profile.class, MealInfo.class, DayMeal.class, MealXFood.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract FoodDao foodDao();
 
@@ -46,6 +48,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "ba_nutrigo")
+                            .addMigrations(MIGRATION_2_3)
                             .addCallback(callback)
                             .build();
                 }
@@ -54,6 +57,28 @@ public abstract class AppDatabase extends RoomDatabase {
 
         return INSTANCE;
     }
+
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("DROP TABLE IF EXISTS Profile");
+            database.execSQL("CREATE TABLE IF NOT EXISTS Profile (" +
+                    "id INTEGER NOT NULL," +
+                    "kcal INTEGER NOT NULL," +
+                    "fat INTEGER NOT NULL," +
+                    "carbs INTEGER NOT NULL," +
+                    "sugar INTEGER NOT NULL," +
+                    "protein INTEGER NOT NULL," +
+                    "weight REAL NOT NULL," +
+                    "height INTEGER NOT NULL," +
+                    "age INTEGER NOT NULL," +
+                    "male INTEGER NOT NULL," +
+                    "PRIMARY KEY(id)" +
+                    ")");
+
+            database.execSQL("INSERT INTO Profile VALUES (1, 2500, 80, 300, 75, 100,75.5,180,20,1)");
+        }
+    };
 
     // populate database with initial data
     private static RoomDatabase.Callback callback = new RoomDatabase.Callback() {

@@ -206,6 +206,7 @@ public class FragmentDay extends Fragment {
         profileViewModel.getProfile().observe(getViewLifecycleOwner(), profile -> {
             if (profile != null) {
                 pc_kcal.setMax(profile.getKcal());
+                pc_carbs.setSecMax(profile.getSugar());
                 pc_carbs.setMax(profile.getCarbs());
                 pc_fat.setMax(profile.getFat());
                 pc_protein.setMax(profile.getProtein());
@@ -254,6 +255,7 @@ public class FragmentDay extends Fragment {
 
         // update progress
         pc_kcal.setProgress(eKcal,eFat, eCarbs, eProtein);
+        pc_carbs.setSecondary((int) sugar);
         pc_carbs.setProgress((int) carbs);
         pc_fat.setProgress((int) fat);
         pc_protein.setProgress((int) protein);

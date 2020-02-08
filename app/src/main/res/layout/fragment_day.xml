@@ -60,9 +60,9 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        app:progressColor="@color/fat"
                         app:color="@color/grey"
-                        app:label="@string/fat" />
+                        app:label="@string/fat"
+                        app:progressColor="@color/fat" />
 
                     <de.seibushin.nutrigo.view.widget.ProgressBar
                         android:id="@+id/pc_carbs"
@@ -71,9 +71,11 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        app:progressColor="@color/carbs"
                         app:color="@color/grey"
-                        app:label="@string/carbs" />
+                        app:label="@string/carbs"
+                        app:progressColor="@color/carbs">
+
+                    </de.seibushin.nutrigo.view.widget.ProgressBar>
 
                     <de.seibushin.nutrigo.view.widget.ProgressBar
                         android:id="@+id/pc_protein"
@@ -81,9 +83,9 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        app:progressColor="@color/protein"
                         app:color="@color/grey"
-                        app:label="@string/protein" />
+                        app:label="@string/protein"
+                        app:progressColor="@color/protein" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <de.seibushin.nutrigo.view.widget.TimeLine

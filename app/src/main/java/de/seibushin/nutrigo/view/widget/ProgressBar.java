@@ -20,6 +20,8 @@ public class ProgressBar extends RelativeLayout {
     private String label = "";
     private int max = 100;
     private int progress = 50;
+    private int secondary = 0;
+    private int secMax = 0;
     private int color;
     private int progressColor;
     private float strokeWidth = 30;
@@ -116,11 +118,50 @@ public class ProgressBar extends RelativeLayout {
             if (pp >= max) {
                 p = width;
             }
-            rect.right = p;
-            canvas.drawLine(offset, top + strokeWidth / 2, p - offset, top + strokeWidth / 2, paint);
+
+            float end = p - offset;
+            boolean crescent = false;
+            if (p - 2 * offset < 1) {
+                end = offset + 1;
+                crescent = true;
+            }
+            canvas.drawLine(offset, top + strokeWidth / 2, end, top + strokeWidth / 2, paint);
+            if (crescent) {
+                if (overdraw > 0) {
+                    paint.setColor(progressColor);
+                } else {
+                    paint.setColor(color);
+                }
+
+                canvas.drawLine(offset + p, top + strokeWidth / 2, width - strokeWidth, top + strokeWidth / 2, paint);
+            }
 
             pp -= max;
             overdraw++;
+        }
+
+        if (secondary > 0) {
+            paint.setColor(getResources().getColor(R.color.secondary, null));
+            paint.setStrokeWidth(strokeWidth / 2);
+            float p = (float) Math.floor((float) secondary / max * width);
+            float end = p - offset / 2;
+            if (end < 0) {
+                end = offset / 2 + 1;
+            }
+            canvas.drawLine(offset, top + strokeWidth / 2, end, top + strokeWidth / 2, paint);
+
+            float secMaxLine = (float) Math.floor((float) secMax / max * width);
+            paint.setStrokeWidth(2);
+            paint.setColor(getResources().getColor(R.color.colorAccent, null));
+            canvas.drawLine(secMaxLine, top - 5, secMaxLine, top + strokeWidth + 5, paint);
+
+            paint.setColor(getResources().getColor(R.color.grey, null));
+            paint.setTextSize(h2Size);
+            String textSec = "" + secondary;
+            if (showMissing) {
+                textSec = "" + (secMax - secondary);
+            }
+            canvas.drawText(textSec, width / 2 - paint.measureText(textSec) / 2, h2Size + h1Size + h2Size, paint);
         }
 
         paint.setColor(Color.GRAY);
@@ -142,8 +183,6 @@ public class ProgressBar extends RelativeLayout {
         canvas.drawText(text, width / 2 - paint.measureText(text) / 2, h2Size + h1Size, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
-
-
     }
 
     public void setProgress(int progress) {
@@ -151,8 +190,16 @@ public class ProgressBar extends RelativeLayout {
         invalidate();
     }
 
+    public void setSecondary(int secondary) {
+        this.secondary = secondary;
+    }
+
     public void setMax(int max) {
         this.max = max;
         invalidate();
+    }
+
+    public void setSecMax(int secMax) {
+        this.secMax = secMax;
     }
 }

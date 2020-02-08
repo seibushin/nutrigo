@@ -13,5 +13,7 @@
     <color name="fat">#FFC107</color>
     <color name="protein">#8BC34A</color>
     <color name="carbs">#03A9F4</color>
+    <color name="sugar">#03F4F4</color>
     <color name="grey">#C7C7C7</color>
+    <color name="secondary">#AEFFFFFF</color>
 </resources>

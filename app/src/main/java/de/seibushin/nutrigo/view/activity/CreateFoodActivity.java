@@ -143,7 +143,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         name.setOnFocusChangeListener((view, b) -> suggestionAdapter.clear());
         weight = findViewById(R.id.ti_weight);
         portion = findViewById(R.id.ti_portion);
-        kcal = findViewById(R.id.ti_kcal);
+        kcal = findViewById(R.id.weight);
         fat = findViewById(R.id.ti_fat);
         carbs = findViewById(R.id.ti_carbs);
         sugar = findViewById(R.id.ti_sugar);
@@ -200,7 +200,7 @@ public class CreateFoodActivity extends AppCompatActivity {
                 return true;
             } else {
                 checkMacro.setTextColor(getColor(R.color.colorAccent));
-                checkMacro.setText("Kcal should be " + Helper.formatDecimal(kCalced) + "!");
+                checkMacro.setText(getString(R.string.macroCheck,  Helper.formatDecimal(kCalced)));
                 return false;
             }
         } catch (NumberFormatException e) {
@@ -256,7 +256,7 @@ public class CreateFoodActivity extends AppCompatActivity {
                 Food food = new Food(_name, _kcal, _fat, _carbs, _sugar, _protein, _weight, _portion);
                 foodViewModel.insert(food);
 
-                Snackbar.make(outerWrapper, R.string.add_food_insert, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(outerWrapper, getString(R.string.add_food_insert, _name), Snackbar.LENGTH_LONG).show();
                 resetFood();
             }
         } catch (NumberFormatException e) {

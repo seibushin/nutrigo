@@ -155,9 +155,21 @@ public class TimeLine extends RelativeLayout {
                 }
             }
 
-            canvas.drawPoint(xx, yy, paint);
-        }
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            canvas.drawCircle(xx, yy, size, paint);
+            float val = timepoint.value;
+            while (val > timepoint.max) {
+                val -= timepoint.max;
+                size = timepoint.pointsize(val);
+                paint.setAlpha(100);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawCircle(xx, yy, size, paint);
+            }
 
+            paint.setAlpha(255);
+            paint.setStyle(Paint.Style.FILL);
+        }
 
         if (timePoints.size() > 1) {
             paint.setColor(color);
@@ -192,10 +204,10 @@ public class TimeLine extends RelativeLayout {
             tlp.setTimestamp(nd.getTimestamp());
             tlp.value = (float) nd.getKcal();
             if (nd.getType() == NutritionType.MEAL) {
-                tlp.max = 800;
+                tlp.max = 300;
                 tlp.color = getResources().getColor(R.color.mealPoint, null);
             } else if (nd.getType() == NutritionType.FOOD) {
-                tlp.max = 200;
+                tlp.max = 300;
                 tlp.color = getResources().getColor(R.color.foodPoint, null);
             }
 
