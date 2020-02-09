@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -33,6 +34,7 @@ import de.seibushin.nutrigo.viewmodel.MealViewModel;
 public class FragmentMeal extends FragmentList {
     private MealViewModel mealViewModel;
     private DayMealViewModel dayMealViewModel;
+    private RelativeLayout outer;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,51 +54,52 @@ public class FragmentMeal extends FragmentList {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        Context context = view.getContext();
+        RecyclerView recyclerView = view.findViewById(R.id.nu_items);
+        outer = view.findViewById(R.id.food_outer);
 
-            LinearLayoutManager llm = new LinearLayoutManager(context);
-            DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
-            did.setDrawable(getContext().getDrawable(R.drawable.divider));
+        LinearLayoutManager llm = new LinearLayoutManager(context);
+        DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
+        did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
-            adapter = new NutritionAdapter();
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(llm);
-            recyclerView.addItemDecoration(did);
-            recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
-                @Override
-                public void onClick(View view, int position) {
-                    Meal meal = (Meal) adapter.getItem(position);
+        adapter = new NutritionAdapter();
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(llm);
+        recyclerView.addItemDecoration(did);
+        recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Meal meal = (Meal) adapter.getItem(position);
 
-                    MealDay md = dayMealViewModel.insert(meal);
+                MealDay md = dayMealViewModel.insert(meal);
 
-                    Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_added_day, meal.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
-                                // remove food from day
-                                dayMealViewModel.delete(md);
-                            }));
-                    showSnackbar(snack);
-                }
+                Snackbar snack = Snackbar.make(outer, getString(R.string.undo_food_added_day, meal.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                            // remove food from day
+                            dayMealViewModel.delete(md);
+                        }));
+//                snack.show();
+                showSnackbar(snack);
+            }
 
-                @Override
-                public void onLongClick(View view, int position) {
-                    Meal meal = (Meal) adapter.getItem(position);
-                    mealViewModel.delete(meal);
+            @Override
+            public void onLongClick(View view, int position) {
+                Meal meal = (Meal) adapter.getItem(position);
+                mealViewModel.delete(meal);
 
-                    Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> mealViewModel.insert(meal)));
-                    showSnackbar(snack);
-                }
-            }));
+                Snackbar snack = Snackbar.make(outer, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> mealViewModel.insert(meal)));
+//                snack.show();
+                showSnackbar(snack);
+            }
+        }));
 
-            mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
-            mealViewModel.getAllMeal().observe(getViewLifecycleOwner(), meals -> {
-                adapter.setItems(mealViewModel.getServedMeals());
-            });
+        mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
+        mealViewModel.getAllMeal().observe(getViewLifecycleOwner(), meals -> {
+            adapter.setItems(mealViewModel.getServedMeals());
+        });
 
-            dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
-        }
+        dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         return view;
     }
 
