@@ -126,8 +126,8 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.unreveal(false);
         NutritionUnit nu = dataFiltered.get(position);
+        holder.unreveal(false);
         holder.setNutri(nu);
 
         if (clickAction != null) {
@@ -236,7 +236,6 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         private final TextView carbs;
         private final TextView sugar;
         private final TextView protein;
-        private final TextView weight;
         private final TextView portion;
         private final ImageView ic_nutri;
 
@@ -260,7 +259,6 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             carbs = view.findViewById(R.id.tv_carbs);
             sugar = view.findViewById(R.id.tv_sugar);
             protein = view.findViewById(R.id.tv_protein);
-            weight = view.findViewById(R.id.tv_weight);
             portion = view.findViewById(R.id.tv_portion);
             ic_nutri = view.findViewById(R.id.ic_nutri);
 
@@ -286,7 +284,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             kcal.setText(kcal.getContext().getString(R.string.kcal_unit, item.getKcal()));
             fat.setText(Helper.formatDecimal(item.getFat()));
             carbs.setText(Helper.formatDecimal(item.getCarbs()));
-            sugar.setText(Helper.formatDecimal(item.getSugar()));
+            sugar.setText(String.format("(%s)", Helper.formatDecimal(item.getSugar())));
             protein.setText(Helper.formatDecimal(item.getProtein()));
 
             if (item.getType() == NutritionType.FOOD) {
@@ -295,7 +293,7 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
                 portion.setText(portion.getContext().getString(R.string.weight_unit, item.getPortion()));
             } else {
                 ic_nutri.setImageResource(R.drawable.ic_meal);
-                portion.setText(String.format("%s", item.getPortion()));
+                portion.setText(String.format("%s | %1.0fg", item.getPortion(), item.getWeight()));
             }
         }
     }

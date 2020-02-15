@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabUnselected(TabLayout.Tab tab) {
                 // hide keyboard if shown
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                if (imm != null && imm.isActive()) {
+                if (imm != null && imm.isActive() && getCurrentFocus() != null) {
                     imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 }
             }

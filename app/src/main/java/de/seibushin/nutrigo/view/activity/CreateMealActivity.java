@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -48,7 +49,6 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
     private FoodViewModel foodViewModel;
     private final ServingDialog servingDialog = new ServingDialog();
     private Food currentFood;
-    private int currentPosition;
 
     private MealViewModel mealViewModel;
 
@@ -113,7 +113,6 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         food_adapter.onEdit((nu, pos) -> {
             if (nu.getType() == NutritionType.FOOD) {
                 currentFood = (Food) nu;
-                currentPosition = pos;
             }
 
             servingDialog.show(getSupportFragmentManager(), nu);
@@ -231,10 +230,9 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
 
     @Override
     public void result(Double serving) {
-        if (currentFood != null && currentPosition != -1 && serving > 0) {
+        if (currentFood != null  && serving > 0) {
             currentFood.served = serving;
-            food_adapter.notifyItemChanged(currentPosition);
-            currentPosition = -1;
+            food_adapter.notifyDataSetChanged();
             currentFood = null;
         }
     }

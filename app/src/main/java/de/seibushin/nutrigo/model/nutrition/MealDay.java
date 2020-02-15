@@ -58,7 +58,7 @@ public class MealDay implements NutritionUnit, NutritionDay, EatPoint {
 
     @Override
     public double getWeight() {
-        return meal.getWeight();
+        return portionize(meal.getWeight());
     }
 
     @Override

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <de.seibushin.nutrigo.view.widget.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/reveal"
     android:layout_width="match_parent"
-    android:layout_height="85dp">
+    android:layout_height="75dp">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -12,6 +13,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
             android:gravity="center_vertical|end"
             android:orientation="horizontal">
 
@@ -69,45 +71,17 @@
 
             <TextView
                 android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:includeFontPadding="false"
                 android:text="@string/name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/ic_nutri"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_weight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/zero"
-                android:textSize="12sp"
-                android:visibility="invisible"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tv_portion"
-                app:layout_constraintStart_toEndOf="@+id/tv_portion" />
-
-            <TextView
-                android:id="@+id/tv_portion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/zero"
-                android:textSize="12sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tv_name"
-                app:layout_constraintStart_toEndOf="@+id/tv_name" />
-
-            <TextView
-                android:id="@+id/tv_kcal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/kcal"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ic_nutri"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
@@ -115,12 +89,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:clipToPadding="false"
+                android:dividerPadding="0dp"
                 android:orientation="horizontal"
+                android:padding="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_name">
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_portion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
+                    android:text="@string/zero"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tv_fat_lbl"
@@ -128,6 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:text="@string/fat"
                     android:textAllCaps="true"
                     android:textSize="12sp" />
@@ -138,17 +125,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:text="@string/carbs"
-                    android:textAllCaps="true"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tv_sugar_lbl"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/sugar"
                     android:textAllCaps="true"
                     android:textSize="12sp" />
 
@@ -158,6 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:text="@string/protein"
                     android:textAllCaps="true"
                     android:textSize="12sp" />
@@ -169,10 +148,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_kcal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
+                    android:text="@string/kcal" />
 
                 <TextView
                     android:id="@+id/tv_fat"
@@ -180,6 +169,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:text="@string/zero"
                     android:textAllCaps="true" />
 
@@ -187,8 +177,10 @@
                     android:id="@+id/tv_carbs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
+                    android:layout_weight="0.5"
+                    android:gravity="right|center_horizontal"
+                    android:includeFontPadding="false"
+                    android:paddingEnd="2dp"
                     android:text="@string/zero"
                     android:textAllCaps="true" />
 
@@ -196,10 +188,13 @@
                     android:id="@+id/tv_sugar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
+                    android:layout_weight="0.5"
+                    android:gravity="center_horizontal|left"
+                    android:includeFontPadding="false"
+                    android:paddingStart="2dp"
                     android:text="@string/zero"
-                    android:textAllCaps="true" />
+                    android:textAllCaps="true"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_protein"
@@ -207,6 +202,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    android:includeFontPadding="false"
                     android:text="@string/zero"
                     android:textAllCaps="true" />
             </LinearLayout>
