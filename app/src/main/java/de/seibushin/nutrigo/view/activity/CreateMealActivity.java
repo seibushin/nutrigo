@@ -28,9 +28,6 @@ import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
-import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
-import de.seibushin.nutrigo.view.adapter.ClickListener;
-import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
@@ -113,51 +110,37 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         did.setDrawable(getApplicationContext().getDrawable(R.drawable.divider));
 
         food_adapter = new NutritionAdapter();
+        food_adapter.onEdit((nu, pos) -> {
+            if (nu.getType() == NutritionType.FOOD) {
+                currentFood = (Food) nu;
+                currentPosition = pos;
+            }
+
+            servingDialog.show(getSupportFragmentManager(), nu);
+        });
+        food_adapter.onDelete((nu, pos) -> {
+            food_adapter.remove(pos);
+        });
         rv_foods = findViewById(R.id.rv_foods);
         rv_foods.setAdapter(food_adapter);
         rv_foods.setLayoutManager(llm);
         rv_foods.addItemDecoration(did);
-        rv_foods.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_foods, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                NutritionUnit nu = food_adapter.getItem(position);
-                if (nu.getType() == NutritionType.FOOD) {
-                    currentFood = (Food) nu;
-                    currentPosition = position;
-                }
-
-                servingDialog.show(getSupportFragmentManager(), nu);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                food_adapter.remove(position);
-            }
-        }));
 
         LinearLayoutManager llm2 = new LinearLayoutManager(this);
         DividerItemDecoration did2 = new DividerItemDecoration(this, llm2.getOrientation());
         did2.setDrawable(getApplicationContext().getDrawable(R.drawable.divider));
 
         search_adapter = new NutritionAdapter();
+        search_adapter.onClick((nu, pos) -> {
+            Food food = (Food) nu;
+
+            // add searched food to actual meal food
+            food_adapter.add(food);
+        });
         rv_search = findViewById(R.id.rv_search);
         rv_search.setAdapter(search_adapter);
         rv_search.setLayoutManager(llm2);
         rv_search.addItemDecoration(did2);
-        rv_search.addOnItemTouchListener(new ItemTouchListener(getApplicationContext(), rv_search, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                Food food = (Food) search_adapter.getItem(position);
-
-                // add searched food to actual meal food
-                food_adapter.add(food);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
 
         foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
         foodViewModel.getAllFood().observe(this, foods -> {

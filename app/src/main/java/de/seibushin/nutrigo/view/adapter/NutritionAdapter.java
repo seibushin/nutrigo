@@ -3,14 +3,18 @@ package de.seibushin.nutrigo.view.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.SortedListAdapterCallback;
@@ -19,6 +23,7 @@ import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.NutritionDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
+import de.seibushin.nutrigo.view.widget.SwipeRevealLayout;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link NutritionUnit}
@@ -49,13 +54,6 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             return o1 == o2;
         }
     });
-
-//    private final OnListFragmentInteractionListener mListener;
-
-//    public MyItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-//        data = items;
-//        mListener = listener;
-//    }
 
     public NutritionAdapter() {
     }
@@ -95,26 +93,76 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         this.dataFiltered.replaceAll(new ArrayList<>(data));
     }
 
+    private ButtonAction editAction;
+    private ButtonAction cloneAction;
+    private ButtonAction deleteAction;
+    private ButtonAction clickAction;
+
+    public void onClick(ButtonAction clickAction) {
+        this.clickAction = clickAction;
+    }
+
+    public void onEdit(ButtonAction editAction) {
+        this.editAction = editAction;
+    }
+
+    public void onDelete(ButtonAction deleteAction) {
+        this.deleteAction = deleteAction;
+    }
+
+    public void onClone(ButtonAction cloneAction) {
+        this.cloneAction = cloneAction;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.nutrition_item, parent, false);
         return new ViewHolder(view);
     }
 
+    public interface ButtonAction {
+        void action(NutritionUnit nu, int pos);
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.setNutri(dataFiltered.get(position));
+        holder.unreveal(false);
+        NutritionUnit nu = dataFiltered.get(position);
+        holder.setNutri(nu);
 
-//        holder.mView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
-//            }
-//        });
+        if (clickAction != null) {
+            holder.nuView.setOnClickListener(v -> clickAction.action(nu, position));
+        }
+
+        if (editAction != null) {
+            holder.edit.setVisibility(View.VISIBLE);
+            holder.edit.setOnClickListener(v -> {
+                holder.unreveal(true);
+                editAction.action(nu, position);
+            });
+        } else {
+            holder.edit.setVisibility(View.GONE);
+        }
+
+        if (cloneAction != null) {
+            holder.clone.setVisibility(View.VISIBLE);
+            holder.clone.setOnClickListener(v -> {
+                holder.unreveal(true);
+                cloneAction.action(nu, position);
+            });
+        } else {
+            holder.clone.setVisibility(View.GONE);
+        }
+
+        if (deleteAction != null) {
+            holder.delete.setVisibility(View.VISIBLE);
+            holder.delete.setOnClickListener(v ->  {
+                holder.unreveal(true);
+                deleteAction.action(nu, position);
+            });
+        } else {
+            holder.delete.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -162,7 +210,8 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         NutritionUnit nu = dataFiltered.removeItemAt(position);
         data.remove(nu);
 
-        notifyDataSetChanged();
+        notifyItemRemoved(position);
+//        notifyDataSetChanged();
     }
 
     @Override
@@ -191,6 +240,12 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         private final TextView portion;
         private final ImageView ic_nutri;
 
+        private final ImageButton edit;
+        private final ImageButton delete;
+        private final ImageButton clone;
+        private final ConstraintLayout nuView;
+        private final SwipeRevealLayout reveal;
+
         /**
          * Constructor
          *
@@ -208,6 +263,16 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             weight = view.findViewById(R.id.tv_weight);
             portion = view.findViewById(R.id.tv_portion);
             ic_nutri = view.findViewById(R.id.ic_nutri);
+
+            edit = view.findViewById(R.id.edit_button);
+            delete = view.findViewById(R.id.delete_button);
+            clone = view.findViewById(R.id.clone_button);
+            nuView = view.findViewById(R.id.nuView);
+            reveal = view.findViewById(R.id.reveal);
+        }
+
+        void unreveal(boolean animate) {
+            reveal.close(animate);
         }
 
         /**

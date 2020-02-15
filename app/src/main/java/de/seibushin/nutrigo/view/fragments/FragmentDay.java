@@ -31,8 +31,6 @@ import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CalendarActivity;
-import de.seibushin.nutrigo.view.adapter.ClickListener;
-import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
@@ -164,38 +162,34 @@ public class FragmentDay extends Fragment {
         servingDialog.setTargetFragment(this, NU_DAY_CHANGE);
 
         adapter = new NutritionAdapter(true);
+        adapter.onEdit((nu, pos) -> {
+            currentNu = nu;
+            servingDialog.show(getParentFragmentManager(), currentNu);
+        });
+        adapter.onDelete((nu, pos) -> {
+            if (nu.getType() == NutritionType.FOOD) {
+                FoodDay food = (FoodDay) nu;
+                dayFoodViewModel.delete(food);
+
+                Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
+                        .show();
+            } else if (nu.getType() == NutritionType.MEAL) {
+                MealDay meal = (MealDay) nu;
+                dayMealViewModel.delete(meal);
+
+                Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayMealViewModel.insertDayMeal(meal)))
+                        .show();
+            }
+        });
+        // todo: implement clone
+//        adapter.onClone(nu -> Toast.makeText(getContext(),"Day clone " + nu.getName(), Toast.LENGTH_LONG).show());
+
         recyclerView = view.findViewById(R.id.list);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(llm);
         recyclerView.addItemDecoration(did);
-        recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                currentNu = adapter.getItem(position);
-
-                servingDialog.show(getParentFragmentManager(), currentNu);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                NutritionUnit nu = adapter.getItem(position);
-                if (nu.getType() == NutritionType.FOOD) {
-                    FoodDay food = (FoodDay) nu;
-                    dayFoodViewModel.delete(food);
-
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.insertDayFood(food)))
-                            .show();
-                } else if (nu.getType() == NutritionType.MEAL) {
-                    MealDay meal = (MealDay) nu;
-                    dayMealViewModel.delete(meal);
-
-                    Snackbar.make(view, getString(R.string.undo_food_deleted, meal.getName()), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayMealViewModel.insertDayMeal(meal)))
-                            .show();
-                }
-            }
-        }));
 
         dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
@@ -251,10 +245,10 @@ public class FragmentDay extends Fragment {
         EatProgress eKcal = new EatProgress(kcal, 0, true, R.color.kcal);
         EatProgress eFat = new EatProgress(fat * 4, 1, false, R.color.fat);
         EatProgress eCarbs = new EatProgress(carbs * 4, 2, false, R.color.carbs);
-        EatProgress eProtein= new EatProgress(protein * 4, 3, false, R.color.protein);
+        EatProgress eProtein = new EatProgress(protein * 4, 3, false, R.color.protein);
 
         // update progress
-        pc_kcal.setProgress(eKcal,eFat, eCarbs, eProtein);
+        pc_kcal.setProgress(eKcal, eFat, eCarbs, eProtein);
         pc_carbs.setSecondary((int) sugar);
         pc_carbs.setProgress((int) carbs);
         pc_fat.setProgress((int) fat);

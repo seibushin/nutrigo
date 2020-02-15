@@ -34,16 +34,6 @@ public abstract class FragmentList extends Fragment {
         adapter.getFilter().filter(query);
     }
 
-    protected void showSnackbar(Snackbar snack) {
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) snack.getView().getLayoutParams();
-        params.setAnchorId(R.id.tabs);
-        params.gravity = Gravity.BOTTOM;
-        params.anchorGravity = Gravity.BOTTOM;
-        snack.getView().setLayoutParams(params);
-        snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
-        snack.show();
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);

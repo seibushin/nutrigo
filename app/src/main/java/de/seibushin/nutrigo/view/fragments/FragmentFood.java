@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,8 +23,6 @@ import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
-import de.seibushin.nutrigo.view.adapter.ClickListener;
-import de.seibushin.nutrigo.view.adapter.ItemTouchListener;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
@@ -64,37 +63,38 @@ public class FragmentFood extends FragmentList {
         did.setDrawable(getContext().getDrawable(R.drawable.divider));
 
         adapter = new NutritionAdapter();
+        adapter.onClick((nu, pos) -> {
+            Food food = (Food) nu;
+
+            FoodDay df = dayFoodViewModel.insert(food);
+
+            Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
+                        // remove food from day
+                        dayFoodViewModel.delete(df);
+                    }));
+            snack.show();
+        });
+        // todo: implement eidt
+        adapter.onEdit((nu, pos) -> {
+            Toast.makeText(getContext(), "Edit " + nu.getName(), Toast.LENGTH_SHORT).show();
+        });
+        // todo: implement clone
+        adapter.onClone((nu,pos) -> {
+            Toast.makeText(getContext(), "Clone " + nu.getName(), Toast.LENGTH_SHORT).show();
+        });
+        adapter.onDelete((nu,pos) -> {
+            Food food = (Food) nu;
+            food.portionize = false;
+            foodViewModel.delete(food);
+
+            Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)));
+            snack.show();
+        });
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(llm);
         recyclerView.addItemDecoration(did);
-        recyclerView.addOnItemTouchListener(new ItemTouchListener(getContext(), recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                Food food = (Food) adapter.getItem(position);
-
-                FoodDay df = dayFoodViewModel.insert(food);
-
-                Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_added_day, food.getName()), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> {
-                            // remove food from day
-                            dayFoodViewModel.delete(df);
-                        }));
-//                snack.show();
-                showSnackbar(snack);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                Food food = (Food) adapter.getItem(position);
-                food.portionize = false;
-                foodViewModel.delete(food);
-
-                Snackbar snack = Snackbar.make(view, getString(R.string.undo_food_deleted, food.getName()), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> foodViewModel.insert(food)));
-//                snack.show();
-                showSnackbar(snack);
-            }
-        }));
 
         foodViewModel = new ViewModelProvider(this).get(FoodViewModel.class);
         foodViewModel.getAllFood().observe(getViewLifecycleOwner(), foods -> {
