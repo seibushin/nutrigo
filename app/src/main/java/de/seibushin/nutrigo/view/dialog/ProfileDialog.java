@@ -80,7 +80,6 @@ public class ProfileDialog extends DialogFragment {
         kcal.addTextChangedListener(tw);
         fat.addTextChangedListener(tw);
         carbs.addTextChangedListener(tw);
-        sugar.addTextChangedListener(tw);
         protein.addTextChangedListener(tw);
 
         weight = view.findViewById(R.id.weight);

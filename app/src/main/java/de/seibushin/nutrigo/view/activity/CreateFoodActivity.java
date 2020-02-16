@@ -143,7 +143,7 @@ public class CreateFoodActivity extends AppCompatActivity {
         name.setOnFocusChangeListener((view, b) -> suggestionAdapter.clear());
         weight = findViewById(R.id.ti_weight);
         portion = findViewById(R.id.ti_portion);
-        kcal = findViewById(R.id.weight);
+        kcal = findViewById(R.id.ti_kcal);
         fat = findViewById(R.id.ti_fat);
         carbs = findViewById(R.id.ti_carbs);
         sugar = findViewById(R.id.ti_sugar);

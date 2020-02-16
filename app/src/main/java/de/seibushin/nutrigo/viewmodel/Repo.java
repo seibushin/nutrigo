@@ -74,6 +74,10 @@ class Repo {
         AppDatabase.writeExecutor.execute(() -> foodDao.delete(food));
     }
 
+    public void updateFood(Food food) {
+        AppDatabase.writeExecutor.execute(() -> foodDao.update(food));
+    }
+
     /*
      * Day Food Section
      */

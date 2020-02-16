@@ -24,6 +24,7 @@ import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.view.activity.CreateFoodActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
+import de.seibushin.nutrigo.view.dialog.FoodDialog;
 import de.seibushin.nutrigo.viewmodel.DayFoodViewModel;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 
@@ -34,7 +35,7 @@ import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 public class FragmentFood extends FragmentList {
     private FoodViewModel foodViewModel;
     private DayFoodViewModel dayFoodViewModel;
-    private RelativeLayout outer;
+    private FoodDialog foodDialog;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,7 +57,6 @@ public class FragmentFood extends FragmentList {
         // Set the adapter
         Context context = view.getContext();
         RecyclerView recyclerView = view.findViewById(R.id.nu_items);
-        outer = view.findViewById(R.id.food_outer);
 
         LinearLayoutManager llm = new LinearLayoutManager(context);
         DividerItemDecoration did = new DividerItemDecoration(getActivity(), llm.getOrientation());
@@ -75,15 +75,12 @@ public class FragmentFood extends FragmentList {
                     }));
             snack.show();
         });
-        // todo: implement eidt
-        adapter.onEdit((nu, pos) -> {
-            Toast.makeText(getContext(), "Edit " + nu.getName(), Toast.LENGTH_SHORT).show();
-        });
+        adapter.onEdit((nu, pos) -> showFoodEdit((Food) nu));
         // todo: implement clone
-        adapter.onClone((nu,pos) -> {
+        adapter.onClone((nu, pos) -> {
             Toast.makeText(getContext(), "Clone " + nu.getName(), Toast.LENGTH_SHORT).show();
         });
-        adapter.onDelete((nu,pos) -> {
+        adapter.onDelete((nu, pos) -> {
             Food food = (Food) nu;
             food.portionize = false;
             foodViewModel.delete(food);
@@ -108,6 +105,16 @@ public class FragmentFood extends FragmentList {
         dayFoodViewModel = new ViewModelProvider(this).get(DayFoodViewModel.class);
 
         return view;
+    }
+
+    /**
+     * Show edit food dialog
+     */
+    private void showFoodEdit(Food food) {
+        if (foodDialog == null) {
+            foodDialog = new FoodDialog();
+        }
+        foodDialog.show(getParentFragmentManager(), food);
     }
 
     @Override
