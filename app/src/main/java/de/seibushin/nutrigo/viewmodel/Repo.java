@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.Nutrigo;
+import de.seibushin.nutrigo.dao.DailyDao;
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.DayMeal;
@@ -17,6 +18,7 @@ import de.seibushin.nutrigo.dao.FoodDao;
 import de.seibushin.nutrigo.dao.MealDao;
 import de.seibushin.nutrigo.dao.MealXFood;
 import de.seibushin.nutrigo.dao.ProfileDao;
+import de.seibushin.nutrigo.model.Daily;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
@@ -37,7 +39,8 @@ class Repo {
     private LiveData<List<MealXFood>> allServings;
     private LiveData<List<MealDay>> dayMeal;
     private LiveData<List<Long>> daysMeal;
-
+    private DailyDao dailyDao;
+    private LiveData<List<Daily>> daily;
 
     Repo(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
@@ -56,6 +59,9 @@ class Repo {
 
         dayMealDao = db.dayMealDao();
         daysMeal = dayMealDao.getDays();
+
+        dailyDao = db.dailyDao();
+        daily = dailyDao.getDaily();
     }
 
     /*
@@ -284,5 +290,9 @@ class Repo {
         daymeal.serving = meal.serving;
 
         AppDatabase.writeExecutor.execute(() -> dayMealDao.update(daymeal));
+    }
+
+    public LiveData<List<Daily>> getDaily() {
+        return daily;
     }
 }

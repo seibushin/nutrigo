@@ -15,6 +15,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import de.seibushin.nutrigo.dao.DailyDao;
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.DayMeal;
@@ -38,6 +39,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract MealDao mealDao();
 
     public abstract DayMealDao dayMealDao();
+
+    public abstract DailyDao dailyDao();
 
     private static volatile AppDatabase INSTANCE;
     private static final int THREADS = 4;

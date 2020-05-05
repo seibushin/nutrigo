@@ -59,4 +59,6 @@
     <string name="tee_calc">Calc</string>
     <string name="macroCheck">Kcal should be %s!</string>
     <string name="tags">Tags</string>
+    <string name="show_chart">Show Chart</string>
+    <string name="last_x_days">Last x days</string>
 </resources>

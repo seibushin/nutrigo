@@ -8,7 +8,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.amitshekhar.DebugDB;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
@@ -31,6 +33,7 @@ import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CalendarActivity;
+import de.seibushin.nutrigo.view.activity.ChartActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.view.dialog.ProfileDialog;
 import de.seibushin.nutrigo.view.dialog.ServingDialog;
@@ -151,6 +154,8 @@ public class FragmentDay extends Fragment {
         timeLine = view.findViewById(R.id.timeline);
 
         view.findViewById(R.id.show_profile).setOnClickListener(v -> showProfile());
+        view.findViewById(R.id.debug).setOnClickListener(v -> showDebug());
+        view.findViewById(R.id.chart).setOnClickListener(v -> showChart());
 
         view.findViewById(R.id.prevDay).setOnClickListener(v -> prevDay());
         view.findViewById(R.id.nextDay).setOnClickListener(v -> nextDay());
@@ -208,6 +213,14 @@ public class FragmentDay extends Fragment {
         });
 
         return view;
+    }
+
+    private void showChart() {
+        startActivity(new Intent(getContext(), ChartActivity.class));
+    }
+
+    private void showDebug() {
+        Toast.makeText(getContext(), "Debug: " + DebugDB.getAddressLog(), Toast.LENGTH_LONG).show();
     }
 
     private void observeMeal() {

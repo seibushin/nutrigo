@@ -86,8 +86,15 @@ public class Meal implements NutritionUnit {
     @Override
     public String toString() {
         return "Meal{" +
-                "mealInfo=" + mealInfo +
-                ", foods=" + foods.stream().map(food -> food.getName() + " " + food.served).collect(Collectors.joining()) +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", kcal=" + getKcal() +
+                ", fat=" + getFat() +
+                ", carbs=" + getCarbs() +
+                ", sugar=" + getSugar() +
+                ", protein=" + getProtein() +
+                ", weight=" + getWeight() +
+                ", portion=" + getPortion() +
                 '}';
     }
 }

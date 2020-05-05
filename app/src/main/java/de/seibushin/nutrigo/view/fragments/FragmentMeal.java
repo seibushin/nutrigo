@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
+import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.activity.CreateMealActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
 import de.seibushin.nutrigo.viewmodel.DayMealViewModel;

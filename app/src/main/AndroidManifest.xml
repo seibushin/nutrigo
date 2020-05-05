@@ -35,6 +35,11 @@
             android:label="@string/select_day"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".view.activity.MainActivity" />
+        <activity
+            android:name=".view.activity.ChartActivity"
+            android:label="@string/show_chart"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".view.activity.MainActivity" />
     </application>
 
 </manifest>
