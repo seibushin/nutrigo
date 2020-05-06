@@ -8,11 +8,13 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import de.seibushin.nutrigo.Helper;
 
 public class Chart extends RelativeLayout {
@@ -201,47 +203,51 @@ public class Chart extends RelativeLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        try {
+            super.onDraw(canvas);
 
-        calcMinMax();
+            calcMinMax();
 
-        float left = 0;
-        float lineStart = 100;
-        float top = 0 + 50;
-        float right = width;
-        float bottom = height - 50;
+            float left = 0;
+            float lineStart = 100;
+            float top = 0 + 50;
+            float right = width;
+            float bottom = height - 50;
 
-        paint.setTextSize(textSize);
-        if (isKcal || isFat || isCarbs || isProtein) {
-            // draw min and max
-            paint.setColor(Color.BLACK);
-            paint.setStyle(Paint.Style.FILL);
-            paint.setStrokeWidth(5);
-            canvas.drawText(Helper.formatInt(max), left, top, paint);
-            canvas.drawText(Helper.formatInt(min), left, bottom, paint);
+            paint.setTextSize(textSize);
+            if (isKcal || isFat || isCarbs || isProtein) {
+                // draw min and max
+                paint.setColor(Color.BLACK);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setStrokeWidth(5);
+                canvas.drawText(Helper.formatInt(max), left, top, paint);
+                canvas.drawText(Helper.formatInt(min), left, bottom, paint);
 
-            drawDashed(canvas, lineStart, top, right, top, Color.GRAY);
-            drawDashed(canvas, lineStart, bottom, right, bottom, Color.GRAY);
-        } else {
-            paint.setTextSize(50);
-            paint.setColor(Color.RED);
-            String info = "No stat selected!";
-            float tw = paint.measureText(info);
-            canvas.drawText(info, width / 2 - tw / 2, height / 2, paint);
+                drawDashed(canvas, lineStart, top, right, top, Color.GRAY);
+                drawDashed(canvas, lineStart, bottom, right, bottom, Color.GRAY);
+            } else {
+                paint.setTextSize(50);
+                paint.setColor(Color.RED);
+                String info = "No stat selected!";
+                float tw = paint.measureText(info);
+                canvas.drawText(info, width / 2 - tw / 2, height / 2, paint);
+            }
+
+
+            if (isKcal)
+                drawStat(canvas, Stat.KCAL);
+
+            if (isFat)
+                drawStat(canvas, Stat.FAT);
+
+            if (isCarbs)
+                drawStat(canvas, Stat.CARBS);
+
+            if (isProtein)
+                drawStat(canvas, Stat.PROTEIN);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.getMessage() + " - " + e.getCause(), Toast.LENGTH_LONG).show();
         }
-
-
-        if (isKcal)
-            drawStat(canvas, Stat.KCAL);
-
-        if (isFat)
-            drawStat(canvas, Stat.FAT);
-
-        if (isCarbs)
-            drawStat(canvas, Stat.CARBS);
-
-        if (isProtein)
-            drawStat(canvas, Stat.PROTEIN);
     }
 
     private void drawDashed(Canvas canvas, float x1, float y1, float x2, float y2, int color) {
