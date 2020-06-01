@@ -53,4 +53,7 @@ public class MealViewModel extends AndroidViewModel {
         repo.deleteMeal(meal);
     }
 
+    public void update(Meal meal) {
+        repo.updateMeal(meal);
+    }
 }

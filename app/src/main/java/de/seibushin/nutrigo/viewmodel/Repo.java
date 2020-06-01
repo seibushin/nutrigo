@@ -295,4 +295,20 @@ class Repo {
     public LiveData<List<Daily>> getDaily() {
         return daily;
     }
+
+    public void updateMeal(Meal meal) {
+        AppDatabase.writeExecutor.execute(() -> {
+            mealDao.update(meal.mealInfo);
+
+            // remove previous foods
+            mealDao.delete(meal.getId());
+
+            // todo: test this
+            // add new foods
+            meal.foods.forEach(food -> {
+                MealXFood mf = new MealXFood(meal.getId(), food.getId(), food.getServed());
+                mealDao.insert(mf);
+            });
+        });
+    }
 }

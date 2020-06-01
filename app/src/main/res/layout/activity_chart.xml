@@ -30,16 +30,35 @@
             android:id="@+id/lastx"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="clip_vertical"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:ems="10"
-            android:hint="@string/last_x_days"
+            android:autofillHints=""
+            android:ems="3"
+            android:focusableInTouchMode="true"
+            android:gravity="end"
             android:inputType="number"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:text="@string/_14"
+            android:textAlignment="gravity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="14"
-            android:autofillHints="" />
+            tools:text="14" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            android:text="@string/days"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/lastx"
+            app:layout_constraintStart_toEndOf="@+id/lastx"
+            app:layout_constraintTop_toTopOf="@+id/lastx" />
 
         <LinearLayout
             android:id="@+id/linearLayout4"
@@ -49,42 +68,52 @@
             android:layout_marginEnd="8dp"
             android:orientation="horizontal"
             android:textAlignment="gravity"
-            android:weightSum="4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lastx">
 
-            <Switch
-                android:id="@+id/kcal_sw"
+            <CheckBox
+                android:id="@+id/kcal_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
+                android:buttonTint="@color/colorAccent"
                 android:checked="true"
-                android:includeFontPadding="false"
-                android:splitTrack="false"
                 android:text="@string/kcal"
-                android:thumbTextPadding="0dp" />
+                android:textAllCaps="false"
+                android:textColor="@color/colorAccent" />
 
-            <Switch
-                android:id="@+id/fat_sw"
+            <CheckBox
+                android:id="@+id/fat_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="@string/fat" />
+                android:buttonTint="@color/fat"
+                android:text="@string/fat"
+                android:textColor="@color/fat" />
 
-            <Switch
-                android:id="@+id/carbs_sw"
+            <CheckBox
+                android:id="@+id/carbs_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="@string/carbs" />
+                android:buttonTint="@color/carbs"
+                android:text="@string/carbs"
+                android:textColor="@color/carbs" />
 
-            <Switch
-                android:id="@+id/protein_sw"
+            <CheckBox
+                android:id="@+id/protein_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="@string/protein" />
+                android:buttonTint="@color/protein"
+                android:text="@string/protein"
+                android:textColor="@color/protein" />
+
         </LinearLayout>
 
         <de.seibushin.nutrigo.view.widget.Chart

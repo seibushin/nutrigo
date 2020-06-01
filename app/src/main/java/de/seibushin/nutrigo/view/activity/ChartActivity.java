@@ -3,6 +3,7 @@ package de.seibushin.nutrigo.view.activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.CheckBox;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -71,14 +72,14 @@ public class ChartActivity extends AppCompatActivity {
             chart.setData(data);
         });
 
-        Switch kcal = findViewById(R.id.kcal_sw);
-        kcal.setOnClickListener(v -> chart.setKcal(((Switch) v).isChecked()));
-        Switch fat = findViewById(R.id.fat_sw);
-        fat.setOnClickListener(v -> chart.setFat(((Switch) v).isChecked()));
-        Switch carbs = findViewById(R.id.carbs_sw);
-        carbs.setOnClickListener(v -> chart.setCarbs(((Switch) v).isChecked()));
-        Switch protein = findViewById(R.id.protein_sw);
-        protein.setOnClickListener(v -> chart.setProtein(((Switch) v).isChecked()));
+        CheckBox kcal = findViewById(R.id.kcal_cb);
+        kcal.setOnClickListener(v -> chart.setKcal(((CheckBox) v).isChecked()));
+        CheckBox fat = findViewById(R.id.fat_cb);
+        fat.setOnClickListener(v -> chart.setFat(((CheckBox) v).isChecked()));
+        CheckBox carbs = findViewById(R.id.carbs_cb);
+        carbs.setOnClickListener(v -> chart.setCarbs(((CheckBox) v).isChecked()));
+        CheckBox protein = findViewById(R.id.protein_cb);
+        protein.setOnClickListener(v -> chart.setProtein(((CheckBox) v).isChecked()));
 
         TextView lastx = findViewById(R.id.lastx);
         lastx.addTextChangedListener(new TextWatcher() {

@@ -61,4 +61,6 @@
     <string name="tags">Tags</string>
     <string name="show_chart">Show Chart</string>
     <string name="last_x_days">Last x days</string>
+    <string name="days">Days</string>
+    <string name="_14">14</string>
 </resources>

@@ -8,6 +8,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,11 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.SortedListAdapterCallback;
 import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.Meal;
+import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
 import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
@@ -245,6 +250,11 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
         private final ConstraintLayout nuView;
         private final SwipeRevealLayout reveal;
 
+        private final ImageButton expand;
+        private final RecyclerView meal_foods;
+
+        private NutritionAdapterSimple adapter;
+
         /**
          * Constructor
          *
@@ -267,6 +277,30 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
             clone = view.findViewById(R.id.clone_button);
             nuView = view.findViewById(R.id.nuView);
             reveal = view.findViewById(R.id.reveal);
+
+            meal_foods = view.findViewById(R.id.meal_foods_rv);
+            expand = view.findViewById(R.id.foods_exp);
+            expand.setOnClickListener(v -> {
+                if (meal_foods.getVisibility() == View.VISIBLE) {
+                    meal_foods.setVisibility(View.GONE);
+                    expand.setImageResource(R.drawable.ic_expand_more);
+                } else {
+                    List<NutritionUnit> meal_nu;
+                    if (item.getClass() == MealDay.class) {
+                        meal_nu = new ArrayList<>(((MealDay) item).meal.foods);
+                    } else {
+                        meal_nu = new ArrayList<>(((Meal) item).foods);
+                    }
+                    adapter.setItems(meal_nu);
+                    meal_foods.setVisibility(View.VISIBLE);
+                    expand.setImageResource(R.drawable.ic_expand_less);
+                }
+            });
+
+            adapter = new NutritionAdapterSimple();
+            LinearLayoutManager llm = new LinearLayoutManager(mView.getContext());
+            meal_foods.setAdapter(adapter);
+            meal_foods.setLayoutManager(llm);
         }
 
         void unreveal(boolean animate) {
@@ -291,9 +325,14 @@ public class NutritionAdapter extends RecyclerView.Adapter<NutritionAdapter.View
                 ic_nutri.setImageResource(R.drawable.ic_food);
                 // a meal portion has no metric
                 portion.setText(portion.getContext().getString(R.string.weight_unit, item.getPortion()));
+                meal_foods.setVisibility(View.GONE);
+                expand.setVisibility(View.GONE);
             } else {
                 ic_nutri.setImageResource(R.drawable.ic_meal);
                 portion.setText(String.format("%s | %1.0fg", item.getPortion(), item.getWeight()));
+                expand.setVisibility(View.VISIBLE);
+                meal_foods.setVisibility(View.GONE);
+                expand.setImageResource(R.drawable.ic_expand_more);
             }
         }
     }
