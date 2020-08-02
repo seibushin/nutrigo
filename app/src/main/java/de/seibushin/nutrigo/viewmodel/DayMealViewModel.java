@@ -24,6 +24,8 @@ public class DayMealViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<MealDay>> getDayMeal() {
+        // this might cause some issues with false nutrition updates on the day fragment
+        // but this is required to have the correct day
         dayMeal = repo.getDayMeal();
         return dayMeal;
     }
@@ -51,6 +53,10 @@ public class DayMealViewModel extends AndroidViewModel {
 
     public MealDay insertDayMeal(MealDay meal) {
         return repo.insertDayMeal(meal);
+    }
+
+    public MealDay insertClone(MealDay meal) {
+        return repo.insertMealClone(meal);
     }
 
     public void delete(MealDay meal) {

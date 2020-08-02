@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.Nullable;
@@ -26,8 +27,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.Nutrigo;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.EatPoint;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
@@ -188,8 +192,22 @@ public class FragmentDay extends Fragment {
                         .show();
             }
         });
-        // todo: implement clone
-//        adapter.onClone(nu -> Toast.makeText(getContext(),"Day clone " + nu.getName(), Toast.LENGTH_LONG).show());
+        adapter.onClone((nu, pos) -> {
+            if (nu.getType() == NutritionType.FOOD) {
+                FoodDay food = (FoodDay) nu;
+                FoodDay fd = dayFoodViewModel.insertClone(food);
+                Snackbar.make(view, getString(R.string.undo_food_cloned, nu.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayFoodViewModel.delete(fd)))
+                        .show();
+            } else if (nu.getType() == NutritionType.MEAL) {
+                MealDay meal = (MealDay) nu;
+                MealDay md = dayMealViewModel.insertClone(meal);
+                Snackbar.make(view, getString(R.string.undo_food_cloned, nu.getName()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> Executors.newSingleThreadExecutor().execute(() -> dayMealViewModel.delete(md)))
+                        .show();
+            }
+
+        });
 
         recyclerView = view.findViewById(R.id.list);
         recyclerView.setAdapter(adapter);
@@ -225,17 +243,19 @@ public class FragmentDay extends Fragment {
 
     private void observeMeal() {
         dayMealViewModel.getDayMeal().observe(getViewLifecycleOwner(), meals -> {
-            adapter.setMeals(new ArrayList<>(dayMealViewModel.getServedMeals()));
+            List<MealDay> dmeals = new ArrayList<>(dayMealViewModel.getServedMeals());
+            adapter.setMeals(new ArrayList<>(dmeals));
             calcDay();
-            timeLine.setMeals(new ArrayList<>(dayMealViewModel.getServedMeals()));
+            timeLine.setMeals(new ArrayList<>(dmeals));
         });
     }
 
     private void observeFood() {
         dayFoodViewModel.getDayFood().observe(getViewLifecycleOwner(), foods -> {
-            adapter.setFoods(new ArrayList<>(foods));
+            List<FoodDay> dfoods = new ArrayList(dayFoodViewModel.getCurrentDayFood());
+            adapter.setFoods(new ArrayList<>(dfoods));
             calcDay();
-            timeLine.setFoods(new ArrayList<>(dayFoodViewModel.getCurrentDayFood()));
+            timeLine.setFoods(new ArrayList<>(dfoods));
         });
     }
 

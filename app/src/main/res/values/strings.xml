@@ -48,6 +48,7 @@
 
     <string name="undo">UNDO</string>
     <string name="undo_food_deleted">%1$s deleted!</string>
+    <string name="undo_food_cloned">%1$s cloned to today!</string>
     <string name="undo_food_added_day">%1$s added to selected day!</string>
     <string name="undo_serving_changed">%1$s serving changed!</string>
     <string name="add_meal_missing">Please add Name and Foods!</string>

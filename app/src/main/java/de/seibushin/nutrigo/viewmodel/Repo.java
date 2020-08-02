@@ -108,6 +108,36 @@ class Repo {
         return food;
     }
 
+    public FoodDay insertFoodClone(FoodDay food) {
+        DayFood df = new DayFood();
+        df.date = Nutrigo.getToday();
+        df.fid = food.getId();
+        df.timestamp = Nutrigo.adjustTimestamp(System.currentTimeMillis());
+        df.serving = food.getPortion();
+
+        AtomicInteger id = new AtomicInteger();
+        try {
+            AppDatabase.writeExecutor.submit(() -> {
+                id.set((int) dayFoodDao.insert(df));
+            }).get();
+
+            df.fdID = id.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        FoodDay fd = new FoodDay();
+        fd.food = food.food;
+        fd.date = df.date;
+        fd.fdID = df.fdID;
+        fd.serving = df.serving;
+        fd.timestamp = df.timestamp;
+
+        return fd;
+    }
+
     FoodDay insertDayFood(Food food) {
         DayFood df = new DayFood();
         df.date = Nutrigo.selectedDay;
@@ -237,6 +267,36 @@ class Repo {
         });
 
         return meal;
+    }
+
+    MealDay insertMealClone(MealDay mealDay) {
+        DayMeal df = new DayMeal();
+        df.date = Nutrigo.getToday();
+        df.mid = mealDay.getId();
+        df.timestamp = Nutrigo.adjustTimestamp(System.currentTimeMillis());
+        df.serving = mealDay.getPortion();
+
+        AtomicInteger id = new AtomicInteger();
+        try {
+            AppDatabase.writeExecutor.submit(() -> {
+                id.set((int) dayMealDao.insert(df));
+            }).get();
+
+            df.mdID = id.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        MealDay fd = new MealDay();
+        fd.meal = mealDay.meal;
+        fd.date = df.date;
+        fd.mdID = df.mdID;
+        fd.serving = df.serving;
+        fd.timestamp = df.timestamp;
+
+        return fd;
     }
 
     MealDay insertDayMeal(Meal meal) {
