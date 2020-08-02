@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.lifecycle.LiveData;
 import de.seibushin.nutrigo.Nutrigo;
+import de.seibushin.nutrigo.dao.DailyDao;
 import de.seibushin.nutrigo.dao.DayFood;
 import de.seibushin.nutrigo.dao.DayFoodDao;
 import de.seibushin.nutrigo.dao.DayMeal;
@@ -17,6 +18,7 @@ import de.seibushin.nutrigo.dao.FoodDao;
 import de.seibushin.nutrigo.dao.MealDao;
 import de.seibushin.nutrigo.dao.MealXFood;
 import de.seibushin.nutrigo.dao.ProfileDao;
+import de.seibushin.nutrigo.model.Daily;
 import de.seibushin.nutrigo.model.Profile;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.FoodDay;
@@ -37,7 +39,8 @@ class Repo {
     private LiveData<List<MealXFood>> allServings;
     private LiveData<List<MealDay>> dayMeal;
     private LiveData<List<Long>> daysMeal;
-
+    private DailyDao dailyDao;
+    private LiveData<List<Daily>> daily;
 
     Repo(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
@@ -56,6 +59,9 @@ class Repo {
 
         dayMealDao = db.dayMealDao();
         daysMeal = dayMealDao.getDays();
+
+        dailyDao = db.dailyDao();
+        daily = dailyDao.getDaily();
     }
 
     /*
@@ -72,6 +78,10 @@ class Repo {
 
     void deleteFood(Food food) {
         AppDatabase.writeExecutor.execute(() -> foodDao.delete(food));
+    }
+
+    public void updateFood(Food food) {
+        AppDatabase.writeExecutor.execute(() -> foodDao.update(food));
     }
 
     /*
@@ -96,6 +106,36 @@ class Repo {
         });
 
         return food;
+    }
+
+    public FoodDay insertFoodClone(FoodDay food) {
+        DayFood df = new DayFood();
+        df.date = Nutrigo.getToday();
+        df.fid = food.getId();
+        df.timestamp = Nutrigo.adjustTimestamp(System.currentTimeMillis());
+        df.serving = food.getPortion();
+
+        AtomicInteger id = new AtomicInteger();
+        try {
+            AppDatabase.writeExecutor.submit(() -> {
+                id.set((int) dayFoodDao.insert(df));
+            }).get();
+
+            df.fdID = id.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        FoodDay fd = new FoodDay();
+        fd.food = food.food;
+        fd.date = df.date;
+        fd.fdID = df.fdID;
+        fd.serving = df.serving;
+        fd.timestamp = df.timestamp;
+
+        return fd;
     }
 
     FoodDay insertDayFood(Food food) {
@@ -229,6 +269,36 @@ class Repo {
         return meal;
     }
 
+    MealDay insertMealClone(MealDay mealDay) {
+        DayMeal df = new DayMeal();
+        df.date = Nutrigo.getToday();
+        df.mid = mealDay.getId();
+        df.timestamp = Nutrigo.adjustTimestamp(System.currentTimeMillis());
+        df.serving = mealDay.getPortion();
+
+        AtomicInteger id = new AtomicInteger();
+        try {
+            AppDatabase.writeExecutor.submit(() -> {
+                id.set((int) dayMealDao.insert(df));
+            }).get();
+
+            df.mdID = id.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        MealDay fd = new MealDay();
+        fd.meal = mealDay.meal;
+        fd.date = df.date;
+        fd.mdID = df.mdID;
+        fd.serving = df.serving;
+        fd.timestamp = df.timestamp;
+
+        return fd;
+    }
+
     MealDay insertDayMeal(Meal meal) {
         DayMeal df = new DayMeal();
         df.date = Nutrigo.selectedDay;
@@ -280,5 +350,25 @@ class Repo {
         daymeal.serving = meal.serving;
 
         AppDatabase.writeExecutor.execute(() -> dayMealDao.update(daymeal));
+    }
+
+    public LiveData<List<Daily>> getDaily() {
+        return daily;
+    }
+
+    public void updateMeal(Meal meal) {
+        AppDatabase.writeExecutor.execute(() -> {
+            mealDao.update(meal.mealInfo);
+
+            // remove previous foods
+            mealDao.delete(meal.getId());
+
+            // todo: test this
+            // add new foods
+            meal.foods.forEach(food -> {
+                MealXFood mf = new MealXFood(meal.getId(), food.getId(), food.getServed());
+                mealDao.insert(mf);
+            });
+        });
     }
 }

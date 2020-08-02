@@ -143,7 +143,7 @@ public class ServingDialog extends DialogFragment {
         try {
             resultListener = (ResultListener) getActivity();
         } catch (ClassCastException e) {
-            Log.e("ServingDialog", e.getMessage(), e);
+            // ignore
         }
     }
 }

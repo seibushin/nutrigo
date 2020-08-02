@@ -19,10 +19,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.seibushin.nutrigo.R;
+import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.MealDay;
 import de.seibushin.nutrigo.view.activity.CreateMealActivity;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
+import de.seibushin.nutrigo.view.dialog.FoodDialog;
+import de.seibushin.nutrigo.view.dialog.MealDialog;
 import de.seibushin.nutrigo.viewmodel.DayMealViewModel;
 import de.seibushin.nutrigo.viewmodel.MealViewModel;
 
@@ -34,6 +37,7 @@ public class FragmentMeal extends FragmentList {
     private MealViewModel mealViewModel;
     private DayMealViewModel dayMealViewModel;
     private RelativeLayout outer;
+    private MealDialog mealDialog;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -74,9 +78,9 @@ public class FragmentMeal extends FragmentList {
                     }));
             snack.show();
         });
-        adapter.onEdit((nu, pos) -> {
-            Toast.makeText(getContext(), "Edit " + nu.getName(), Toast.LENGTH_SHORT).show();
-        });
+
+        adapter.onEdit((nu, pos) -> showMealEdit((Meal) nu));
+
         adapter.onDelete((nu, pos) -> {
             Meal meal = (Meal) nu;
             mealViewModel.delete(meal);
@@ -99,6 +103,16 @@ public class FragmentMeal extends FragmentList {
 
         dayMealViewModel = new ViewModelProvider(this).get(DayMealViewModel.class);
         return view;
+    }
+
+    /**
+     * Show edit food dialog
+     */
+    private void showMealEdit(Meal meal) {
+        if (mealDialog == null) {
+            mealDialog = new MealDialog();
+        }
+        mealDialog.show(getParentFragmentManager(), meal);
     }
 
     @Override

@@ -31,4 +31,7 @@ public class FoodViewModel extends AndroidViewModel {
         repo.deleteFood(food);
     }
 
+    public void update(Food food) {
+        repo.updateFood(food);
+    }
 }

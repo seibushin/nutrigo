@@ -1,42 +1,49 @@
-package de.seibushin.nutrigo.view.activity;
+package de.seibushin.nutrigo.view.dialog;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import de.seibushin.nutrigo.Helper;
 import de.seibushin.nutrigo.R;
 import de.seibushin.nutrigo.model.nutrition.Food;
 import de.seibushin.nutrigo.model.nutrition.Meal;
 import de.seibushin.nutrigo.model.nutrition.NutritionType;
+import de.seibushin.nutrigo.model.nutrition.NutritionUnit;
 import de.seibushin.nutrigo.view.adapter.NutritionAdapter;
-import de.seibushin.nutrigo.view.dialog.ServingDialog;
+import de.seibushin.nutrigo.view.widget.TextInputEditTextWithSuggestion;
 import de.seibushin.nutrigo.viewmodel.FoodViewModel;
 import de.seibushin.nutrigo.viewmodel.MealViewModel;
 
-public class CreateMealActivity extends AppCompatActivity implements ServingDialog.ResultListener {
-    private CoordinatorLayout outerWrapper;
+public class MealDialog extends DialogFragment implements ServingDialog.ResultListener {
+    public static final String TAG = "EditMealFragment";
 
+    private CoordinatorLayout outerWrapper;
     private TextInputEditText name;
     private TextInputEditText tag;
     private TextInputEditText search;
@@ -46,30 +53,41 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
     private NutritionAdapter search_adapter;
     private NutritionAdapter food_adapter;
 
+    private Meal meal;
     private FoodViewModel foodViewModel;
     private final ServingDialog servingDialog = new ServingDialog();
     private Food currentFood;
 
     private MealViewModel mealViewModel;
 
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_meal);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
 
-        outerWrapper = findViewById(R.id.outer_wrapper);
+        servingDialog.resultListener = this;
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.edit_meal, null);
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setPositiveButton("Save", null)
+                .create();
 
-        name = findViewById(R.id.ti_name);
-        tag = findViewById(R.id.ti_tag);
+        dialog.setOnShowListener(dialog1 -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (updateMeal(v)) {
+                    dialog.dismiss();
+                }
+            });
+        });
+
+        outerWrapper = view.findViewById(R.id.outer_wrapper);
+
+        name = view.findViewById(R.id.ti_name);
+        tag = view.findViewById(R.id.ti_tag);
         tag.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // hide keyboard
-                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm != null && imm.isActive(tag)) {
                     imm.hideSoftInputFromWindow(tag.getWindowToken(), 0);
                 }
@@ -78,7 +96,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             }
             return false;
         });
-        search = findViewById(R.id.ti_search);
+        search = view.findViewById(R.id.ti_search);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -87,7 +105,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString().endsWith("  ")) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(name.getWindowToken(), 0);
                     search.clearFocus();
                 } else {
@@ -105,9 +123,9 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             }
         });
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        DividerItemDecoration did = new DividerItemDecoration(this, llm.getOrientation());
-        did.setDrawable(getApplicationContext().getDrawable(R.drawable.divider));
+        LinearLayoutManager llm = new LinearLayoutManager(view.getContext());
+        DividerItemDecoration did = new DividerItemDecoration(view.getContext(), llm.getOrientation());
+        did.setDrawable(view.getContext().getDrawable(R.drawable.divider));
 
         food_adapter = new NutritionAdapter();
         food_adapter.onEdit((nu, pos) -> {
@@ -115,19 +133,21 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
                 currentFood = (Food) nu;
             }
 
-            servingDialog.show(getSupportFragmentManager(), nu);
+            servingDialog.show(getParentFragmentManager(), nu);
         });
         food_adapter.onDelete((nu, pos) -> {
             food_adapter.remove(pos);
         });
-        rv_foods = findViewById(R.id.rv_foods);
+        rv_foods = view.findViewById(R.id.rv_foods);
+        // todo update layout to work for activity and dialog current issue is the dialog
+        rv_foods.getLayoutParams().width = 900;
         rv_foods.setAdapter(food_adapter);
         rv_foods.setLayoutManager(llm);
         rv_foods.addItemDecoration(did);
 
-        LinearLayoutManager llm2 = new LinearLayoutManager(this);
-        DividerItemDecoration did2 = new DividerItemDecoration(this, llm2.getOrientation());
-        did2.setDrawable(getApplicationContext().getDrawable(R.drawable.divider));
+        LinearLayoutManager llm2 = new LinearLayoutManager(view.getContext());
+        DividerItemDecoration did2 = new DividerItemDecoration(view.getContext(), llm2.getOrientation());
+        did2.setDrawable(view.getContext().getDrawable(R.drawable.divider));
 
         search_adapter = new NutritionAdapter();
         search_adapter.onClick((nu, pos) -> {
@@ -136,7 +156,7 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
             // add searched food to actual meal food
             food_adapter.add(food);
         });
-        rv_search = findViewById(R.id.rv_search);
+        rv_search = view.findViewById(R.id.rv_search);
         rv_search.setAdapter(search_adapter);
         rv_search.setLayoutManager(llm2);
         rv_search.addItemDecoration(did2);
@@ -151,81 +171,41 @@ public class CreateMealActivity extends AppCompatActivity implements ServingDial
         });
 
         mealViewModel = new ViewModelProvider(this).get(MealViewModel.class);
+
+        if (meal != null) {
+            updateUI();
+        }
+
+        return dialog;
     }
 
-    /**
-     * Create the actual meal
-     *
-     * @return
-     * @throws NumberFormatException
-     */
-    private void createMeal() {
+    private boolean updateMeal(View view) {
         try {
-            String _name = name.getText().toString().trim();
-            String _tag = tag.getText().toString().trim();
-            Meal meal = new Meal();
-            meal.mealInfo.name = _name;
-            // add all selected food portions
+            meal.mealInfo.name = name.getText().toString().trim();
+            meal.foods = new ArrayList<>();
             food_adapter.getData().forEach(food -> meal.foods.add((Food) food));
-
-            mealViewModel.insert(meal);
-            Snackbar.make(outerWrapper, getString(R.string.add_meal_insert, meal.getName()), Snackbar.LENGTH_LONG).show();
-            resetMeal();
+            mealViewModel.update(meal);
+            return true;
         } catch (NumberFormatException e) {
-            Snackbar.make(outerWrapper, R.string.add_meal_insert_error, Snackbar.LENGTH_LONG).show();
+            // ignore
         }
+        Snackbar.make(view, R.string.edit_food_insert_error, Snackbar.LENGTH_LONG).show();
+        return false;
     }
 
-    /**
-     * Reset the view / clear inputs
-     */
-    private void resetMeal() {
-        // reset values
-        name.setText("");
-        tag.setText("");
-        food_adapter.clear();
+    public void show(FragmentManager fragmentManager, Meal meal) {
+        this.meal = meal;
+        show(fragmentManager, TAG);
+    }
+
+    private void updateUI() {
+        name.setText(meal.getName());
+        food_adapter.setFoods(new ArrayList<>(meal.foods));
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        } else if (item.getItemId() == R.id.action_add) {
-            // insert into database
-            if (food_adapter.getItemCount() > 0 && !"".equals(name.getText().toString())) {
-                createMeal();
-            } else {
-                Snackbar.make(outerWrapper, getString(R.string.add_meal_missing), Snackbar.LENGTH_LONG).show();
-            }
-
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_food, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (food_adapter.getItemCount() > 0 || !"".equals(name.getText().toString())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.add_meal_dialog)
-                    .setPositiveButton(R.string.add_meal_dialog_pos, (dialog, which) -> {
-                        createMeal();
-
-                        super.onBackPressed();
-                    })
-                    .setNegativeButton(R.string.add_meal_dialog_neg, (dialog, which) -> super.onBackPressed());
-            builder.create().show();
-        } else {
-            super.onBackPressed();
-        }
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
     }
 
     @Override

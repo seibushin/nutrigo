@@ -63,4 +63,16 @@ public class Nutrigo {
 
         return c.getTimeInMillis();
     }
+
+    public static long adjustTimestamp(long ts) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+
+    public static long getToday() {
+        return today().getTime();
+    }
 }

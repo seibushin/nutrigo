@@ -29,6 +29,7 @@
     <string name="add_food_dialog_neg">no</string>
     <string name="add_food_insert">%s was added</string>
     <string name="add_food_insert_error">Error occured while adding!</string>
+    <string name="edit_food_insert_error">Error occured while updating!</string>
     <string name="weight_hint">All values should be based on the weight</string>
 
     <string name="add_meal">Add Meal</string>
@@ -47,6 +48,7 @@
 
     <string name="undo">UNDO</string>
     <string name="undo_food_deleted">%1$s deleted!</string>
+    <string name="undo_food_cloned">%1$s cloned to today!</string>
     <string name="undo_food_added_day">%1$s added to selected day!</string>
     <string name="undo_serving_changed">%1$s serving changed!</string>
     <string name="add_meal_missing">Please add Name and Foods!</string>
@@ -58,4 +60,8 @@
     <string name="tee_calc">Calc</string>
     <string name="macroCheck">Kcal should be %s!</string>
     <string name="tags">Tags</string>
+    <string name="show_chart">Show Chart</string>
+    <string name="last_x_days">Last x days</string>
+    <string name="days">Days</string>
+    <string name="_14">14</string>
 </resources>

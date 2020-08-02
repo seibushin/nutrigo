@@ -39,7 +39,6 @@ public class MealViewModel extends AndroidViewModel {
             meal.foods.forEach(food -> {
                 food.portionize = true;
                 food.served = repo.getMealXFoodServing(meal.getId(), food.getId());
-                System.out.println(food);
             });
         });
 
@@ -54,4 +53,7 @@ public class MealViewModel extends AndroidViewModel {
         repo.deleteMeal(meal);
     }
 
+    public void update(Meal meal) {
+        repo.updateMeal(meal);
+    }
 }
